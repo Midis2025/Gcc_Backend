@@ -1,0 +1,233 @@
+/*
+ * Gulf Connect Consultancy — CMS brand theme
+ * Colour + type tokens mirrored from the public site (gcc-orcin.vercel.app).
+ * The CMS runs the brand's dark ("midnight") theme only.
+ */
+
+:root {
+  /* ---- Brand core palette (verbatim from the public site) ---- */
+  --midnight: #0c141d;
+  --midnight-soft: #16202c;
+  --midnight-line: #22303f;
+
+  --bronze: #7a5f36;
+  --bronze-bright: #b8945f;
+  --bronze-hover: #cba871;
+
+  --ivory: #faf8f4;
+  --stone: #efeae1;
+  --stone-deep: #e2dbcf;
+  --graphite: #171c22;
+  --grey: #5f666e;
+
+  /* ---- Semantic surfaces ---- */
+  --color-canvas: var(--midnight);
+  --color-surface: var(--midnight-soft);
+  --color-surface-sunken: var(--midnight);
+  --color-surface-raised: #1c2836;
+
+  --color-border: var(--midnight-line);
+  --color-border-subtle: #faf8f41a;
+
+  /* ---- Semantic foreground ---- */
+  --color-foreground: #f4f1eb;
+  --color-foreground-muted: #f4f1ebd1;
+  --color-foreground-subtle: #f4f1ebb8;
+  --color-foreground-faint: #f4f1eb94;
+
+  /* ---- Accent ---- */
+  --color-accent: var(--bronze-bright);
+  --color-accent-hover: var(--bronze-hover);
+  --color-accent-foreground: var(--midnight);
+  --color-accent-soft: #b8945f26;
+  --color-accent-line: #b8945f59;
+  /* Dark text for use on any solid brand or status fill. */
+  --color-foreground-on-solid: var(--midnight);
+  --color-ring: var(--bronze-bright);
+
+  /* ---- Status ----
+   * danger is the site's dark-theme token. success/warning are derived from the
+   * brand's own hues, lifted for legibility on midnight surfaces (the public
+   * site only ships a light-surface success and has no warning token).
+   */
+  --color-danger: #f0918d;
+  --color-danger-soft: #f0918d26;
+  --color-danger-line: #f0918d59;
+
+  --color-success: #7fbf9a;
+  --color-success-soft: #7fbf9a26;
+
+  --color-warning: #d8a34a;
+  --color-warning-soft: #d8a34a26;
+
+  --color-neutral-soft: #f4f1eb1a;
+
+  /* ---- Type ----
+   * The brand's tracking/weight language at CMS scale (the marketing clamps
+   * are sized for a landing page, not a data-dense admin view).
+   */
+  --font-sans: var(--font-primary), "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+
+  --text-h1: clamp(1.75rem, 1.4rem + 1.2vw, 2.25rem);
+  --text-h1-ls: -0.03em;
+  --text-h1-lh: 1.1;
+
+  --text-h2: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --text-h2-ls: -0.026em;
+  --text-h2-lh: 1.16;
+
+  --text-h3: 1.125rem;
+  --text-h3-ls: -0.018em;
+  --text-h3-lh: 1.28;
+
+  --text-numeral: clamp(2rem, 1.6rem + 1.4vw, 2.75rem);
+  --text-numeral-ls: -0.04em;
+  --text-numeral-lh: 1;
+
+  --text-lead: 1.0625rem;
+  --text-lead-ls: -0.005em;
+  --text-lead-lh: 1.6;
+
+  --text-label: 0.6875rem;
+  --text-label-ls: 0.16em;
+
+  --text-body: 0.9375rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+
+  /* ---- Shape + depth (from the site's token set) ---- */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --shadow-md: 0 12px 28px -12px #0c141d29;
+  --shadow-lg: 0 34px 70px -28px #0c141d47;
+  --shadow-float: 0 44px 90px -34px #0c141d6b;
+
+  --header-h: 4.5rem;
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ---- Base ---- */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-canvas);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 700;
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--text-h1);
+  letter-spacing: var(--text-h1-ls);
+  line-height: var(--text-h1-lh);
+}
+
+h2 {
+  font-size: var(--text-h2);
+  letter-spacing: var(--text-h2-ls);
+  line-height: var(--text-h2-lh);
+}
+
+h3 {
+  font-size: var(--text-h3);
+  letter-spacing: var(--text-h3-ls);
+  line-height: var(--text-h3-lh);
+}
+
+/* ---- Brand type utilities ---- */
+.gcc-label {
+  font-size: var(--text-label);
+  letter-spacing: var(--text-label-ls);
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-foreground-subtle);
+  line-height: 1.2;
+}
+
+.gcc-numeral {
+  font-size: var(--text-numeral);
+  letter-spacing: var(--text-numeral-ls);
+  line-height: var(--text-numeral-lh);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.gcc-lead {
+  font-size: var(--text-lead);
+  letter-spacing: var(--text-lead-ls);
+  line-height: var(--text-lead-lh);
+  color: var(--color-foreground-muted);
+}
+
+/* ---- Controls ---- */
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input,
+select,
+textarea {
+  background: var(--color-surface-sunken);
+  border: 1px solid var(--color-border);
+  color: var(--color-foreground);
+  border-radius: var(--radius-sm);
+  transition: border-color 0.2s var(--ease-out-soft), box-shadow 0.2s var(--ease-out-soft);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-foreground-faint);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 3px;
+}
+
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Data-table headers use the brand's micro-label treatment. */
+thead th {
+  font-size: var(--text-label);
+  letter-spacing: var(--text-label-ls);
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-foreground-subtle);
+  white-space: nowrap;
+}
