@@ -18,11 +18,124 @@ export interface ClerkAdminUser {
   createdAt: string;
 }
 
+function AdminUserRow({
+  adm,
+  isSelf,
+  onUpdate,
+  onDelete,
+}: {
+  adm: ClerkAdminUser;
+  isSelf: boolean;
+  onUpdate: (id: string, updateData: { status?: 'ACTIVE' | 'PENDING'; approved?: boolean; role?: 'SUPER_ADMIN' | 'ADMIN' }) => void;
+  onDelete: (id: string, email: string) => void;
+}) {
+  const [hover, setHover] = useState(false);
+  const [approveHover, setApproveHover] = useState(false);
+  const [removeHover, setRemoveHover] = useState(false);
+
+  return (
+    <tr
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        borderBottom: '1px solid #263541',
+        backgroundColor: hover ? '#1D2A36' : 'transparent',
+        transition: 'background-color 0.2s ease',
+      }}
+    >
+      <td style={{ padding: '14px', fontWeight: 600, color: '#F4F1E9' }}>{adm.name}</td>
+      <td style={{ padding: '14px', color: '#B5BEC7' }}>{adm.email}</td>
+      <td style={{ padding: '14px' }}>
+        <select
+          value={adm.role}
+          onChange={(e) => onUpdate(adm.id, { role: e.target.value as 'SUPER_ADMIN' | 'ADMIN' })}
+          disabled={isSelf}
+          style={{
+            background: '#101821',
+            border: '1px solid #263541',
+            color: adm.role === 'SUPER_ADMIN' ? '#C6A15B' : '#F4F1E9',
+            padding: '4px 8px',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: 'var(--text-xs)',
+            fontWeight: 600,
+            cursor: isSelf ? 'not-allowed' : 'pointer',
+          }}
+        >
+          <option value="ADMIN">ADMIN</option>
+          <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+        </select>
+      </td>
+      <td style={{ padding: '14px' }}>
+        <span
+          style={{
+            padding: '4px 8px',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: 'var(--text-xs)',
+            fontWeight: 600,
+            backgroundColor: adm.approved ? 'rgba(127, 198, 154, 0.15)' : 'rgba(198, 161, 91, 0.15)',
+            color: adm.approved ? '#7FC69A' : '#C6A15B',
+            border: adm.approved ? '1px solid rgba(127, 198, 154, 0.3)' : '1px solid rgba(198, 161, 91, 0.3)',
+          }}
+        >
+          {adm.approved ? 'APPROVED (ACTIVE)' : 'PENDING APPROVAL'}
+        </span>
+      </td>
+      <td style={{ padding: '14px', color: '#788692' }}>
+        {new Date(adm.createdAt).toLocaleDateString()}
+      </td>
+      <td style={{ padding: '14px', textAlign: 'right' }}>
+        {!adm.approved && (
+          <button
+            onClick={() => onUpdate(adm.id, { approved: true, status: 'ACTIVE' })}
+            onMouseEnter={() => setApproveHover(true)}
+            onMouseLeave={() => setApproveHover(false)}
+            style={{
+              background: approveHover ? '#D4B16B' : '#C6A15B',
+              color: '#101821',
+              border: 'none',
+              padding: '5px 12px',
+              borderRadius: 'var(--radius-sm)',
+              fontWeight: 700,
+              fontSize: 'var(--text-xs)',
+              marginRight: '6px',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s ease',
+            }}
+          >
+            ✓ Approve User
+          </button>
+        )}
+        {!isSelf && (
+          <button
+            onClick={() => onDelete(adm.id, adm.email)}
+            onMouseEnter={() => setRemoveHover(true)}
+            onMouseLeave={() => setRemoveHover(false)}
+            style={{
+              background: removeHover ? '#B56868' : '#C87979',
+              color: '#101821',
+              border: 'none',
+              padding: '5px 10px',
+              borderRadius: 'var(--radius-sm)',
+              cursor: 'pointer',
+              fontSize: 'var(--text-xs)',
+              fontWeight: 600,
+              transition: 'background-color 0.2s ease',
+            }}
+          >
+            Remove
+          </button>
+        )}
+      </td>
+    </tr>
+  );
+}
+
 export default function AdminUsersGovernancePage() {
   const { user: clerkCurrentUser } = useUser();
   const [admins, setAdmins] = useState<ClerkAdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [refreshHover, setRefreshHover] = useState(false);
 
   useEffect(() => {
     fetchAdmins();
@@ -72,13 +185,13 @@ export default function AdminUsersGovernancePage() {
   };
 
   if (loading) {
-    return <div style={{ padding: '60px 20px', textAlign: 'center', color: 'var(--color-foreground-subtle)' }}>Loading admin user list...</div>;
+    return <div style={{ padding: '60px 20px', textAlign: 'center', color: '#788692' }}>Loading admin user list...</div>;
   }
 
   if (error) {
     return (
       <div style={{ maxWidth: '1000px', margin: '40px auto', padding: '0 20px' }}>
-        <div style={{ background: 'var(--color-danger-soft)', border: '1px solid var(--color-danger-line)', color: 'var(--color-danger)', padding: '20px', borderRadius: 'var(--radius-sm)' }}>
+        <div style={{ background: 'rgba(200, 121, 121, 0.15)', border: '1px solid #C87979', color: '#C87979', padding: '20px', borderRadius: 'var(--radius-sm)' }}>
           {error}
         </div>
       </div>
@@ -89,121 +202,50 @@ export default function AdminUsersGovernancePage() {
     <div style={{ maxWidth: '1100px', margin: '30px auto', padding: '0 20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
         <div>
-          <h1 style={{ color: 'var(--color-foreground)', margin: 0 }}>Super Admin Governance</h1>
-          <p style={{ color: 'var(--color-foreground-subtle)', margin: '6px 0 0 0', fontSize: 'var(--text-body)' }}>Approve, reject, or manage roles for admin registrants</p>
+          <h1 style={{ color: '#F4F1E9', margin: 0 }}>Super Admin Governance</h1>
+          <p style={{ color: '#788692', margin: '6px 0 0 0', fontSize: 'var(--text-body)' }}>Approve, reject, or manage roles for admin registrants</p>
         </div>
         <button
           onClick={fetchAdmins}
+          onMouseEnter={() => setRefreshHover(true)}
+          onMouseLeave={() => setRefreshHover(false)}
           style={{
-            background: 'var(--color-surface-sunken)',
-            border: '1px solid var(--color-border)',
-            color: 'var(--color-foreground)',
+            background: refreshHover ? '#1D2A36' : '#17222D',
+            border: '1px solid #263541',
+            color: '#B5BEC7',
             padding: '8px 16px',
             borderRadius: 'var(--radius-sm)',
             cursor: 'pointer',
+            fontWeight: 600,
+            transition: 'background-color 0.2s ease',
           }}
         >
           🔄 Refresh User List
         </button>
       </div>
 
-      <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
+      <div style={{ background: '#17222D', border: '1px solid #263541', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 'var(--text-sm)' }}>
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--color-border)', color: 'var(--color-foreground-subtle)', background: 'var(--color-surface-sunken)' }}>
-                <th style={{ padding: '14px' }}>Admin Name</th>
-                <th style={{ padding: '14px' }}>Email Address</th>
-                <th style={{ padding: '14px' }}>Role</th>
-                <th style={{ padding: '14px' }}>Approval Status</th>
-                <th style={{ padding: '14px' }}>Registered Date</th>
-                <th style={{ padding: '14px', textAlign: 'right' }}>Actions</th>
+              <tr style={{ background: '#101821', borderBottom: '1px solid #263541' }}>
+                <th style={{ padding: '14px', color: '#788692', fontWeight: 600 }}>ADMIN NAME</th>
+                <th style={{ padding: '14px', color: '#788692', fontWeight: 600 }}>EMAIL ADDRESS</th>
+                <th style={{ padding: '14px', color: '#788692', fontWeight: 600 }}>ROLE</th>
+                <th style={{ padding: '14px', color: '#788692', fontWeight: 600 }}>APPROVAL STATUS</th>
+                <th style={{ padding: '14px', color: '#788692', fontWeight: 600 }}>REGISTERED DATE</th>
+                <th style={{ padding: '14px', textAlign: 'right', color: '#788692', fontWeight: 600 }}>ACTIONS</th>
               </tr>
             </thead>
             <tbody>
               {admins.map((adm) => (
-                <tr key={adm.id} style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
-                  <td style={{ padding: '14px', fontWeight: 600 }}>{adm.name}</td>
-                  <td style={{ padding: '14px' }}>{adm.email}</td>
-                  <td style={{ padding: '14px' }}>
-                    <select
-                      value={adm.role}
-                      onChange={(e) => handleUpdate(adm.id, { role: e.target.value as 'SUPER_ADMIN' | 'ADMIN' })}
-                      disabled={clerkCurrentUser?.id === adm.id}
-                      style={{
-                        background: 'var(--color-surface-sunken)',
-                        border: '1px solid var(--color-border)',
-                        color: adm.role === 'SUPER_ADMIN' ? 'var(--color-accent)' : 'var(--color-foreground)',
-                        padding: '4px 8px',
-                        borderRadius: 'var(--radius-sm)',
-                        fontSize: 'var(--text-xs)',
-                        fontWeight: 600,
-                      }}
-                    >
-                      <option value="ADMIN">ADMIN</option>
-                      <option value="SUPER_ADMIN">SUPER_ADMIN</option>
-                    </select>
-                  </td>
-                  <td style={{ padding: '14px' }}>
-                    <span
-                      style={{
-                        padding: '4px 8px',
-                        borderRadius: 'var(--radius-sm)',
-                        fontSize: 'var(--text-xs)',
-                        fontWeight: 600,
-                        backgroundColor:
-                          adm.approved
-                            ? 'var(--color-success-soft)'
-                            : 'var(--color-warning-soft)',
-                        color:
-                          adm.approved
-                            ? 'var(--color-success)'
-                            : 'var(--color-warning)',
-                      }}
-                    >
-                      {adm.approved ? 'APPROVED (ACTIVE)' : 'PENDING APPROVAL'}
-                    </span>
-                  </td>
-                  <td style={{ padding: '14px', color: 'var(--color-foreground-subtle)' }}>
-                    {new Date(adm.createdAt).toLocaleDateString()}
-                  </td>
-                  <td style={{ padding: '14px', textAlign: 'right' }}>
-                    {!adm.approved && (
-                      <button
-                        onClick={() => handleUpdate(adm.id, { approved: true, status: 'ACTIVE' })}
-                        style={{
-                          background: 'var(--color-success)',
-                          color: 'var(--color-foreground-on-solid)',
-                          border: 'none',
-                          padding: '4px 10px',
-                          borderRadius: 'var(--radius-sm)',
-                          fontWeight: 600,
-                          fontSize: 'var(--text-xs)',
-                          marginRight: '6px',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        ✓ Approve User
-                      </button>
-                    )}
-                    {clerkCurrentUser?.id !== adm.id && (
-                      <button
-                        onClick={() => handleDelete(adm.id, adm.email)}
-                        style={{
-                          background: 'transparent',
-                          border: '1px solid var(--color-border)',
-                          color: 'var(--color-foreground)',
-                          padding: '4px 8px',
-                          borderRadius: 'var(--radius-sm)',
-                          cursor: 'pointer',
-                          fontSize: 'var(--text-xs)',
-                        }}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </td>
-                </tr>
+                <AdminUserRow
+                  key={adm.id}
+                  adm={adm}
+                  isSelf={clerkCurrentUser?.id === adm.id}
+                  onUpdate={handleUpdate}
+                  onDelete={handleDelete}
+                />
               ))}
             </tbody>
           </table>

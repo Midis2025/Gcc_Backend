@@ -5,6 +5,8 @@ import { UserButton } from '@clerk/nextjs';
 import { Logo } from '@/components/logo';
 
 export default function PendingApprovalPage() {
+  const [btnHover, setBtnHover] = React.useState(false);
+
   return (
     <div
       style={{
@@ -13,7 +15,7 @@ export default function PendingApprovalPage() {
         justifyContent: 'center',
         minHeight: '100vh',
         padding: '24px',
-        background: 'radial-gradient(130% 115% at 78% 46%, #16202c 0%, #0c141d 38%, #080f16 72%, #05090e 100%)',
+        background: '#101821',
         boxSizing: 'border-box',
       }}
     >
@@ -21,12 +23,11 @@ export default function PendingApprovalPage() {
         style={{
           width: '100%',
           maxWidth: '500px',
-          background: 'linear-gradient(152deg, #16202cf2 0%, #0c141de6 52%, #0a1017f2 100%)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid var(--color-border)',
-          borderTop: '2px solid var(--color-warning)',
+          background: '#17222D',
+          border: '1px solid #263541',
+          borderTop: '2px solid #C6A15B',
+          borderRadius: 'var(--radius-md)',
           padding: '48px 40px',
-          boxShadow: '0 40px 90px -40px #05090ee6',
           textAlign: 'center',
         }}
       >
@@ -34,18 +35,11 @@ export default function PendingApprovalPage() {
           <Logo variant="mark" height="3.5rem" />
         </div>
 
-        <div
-          style={{
-            fontSize: '2.5rem',
-            marginBottom: '16px',
-          }}
-        >
-          ⏳
-        </div>
+        <div style={{ fontSize: '2.5rem', marginBottom: '16px' }}>⏳</div>
 
         <h1
           style={{
-            color: 'var(--color-foreground)',
+            color: '#F4F1E9',
             margin: '0 0 12px 0',
             fontSize: 'var(--text-h2)',
             fontWeight: 700,
@@ -56,22 +50,22 @@ export default function PendingApprovalPage() {
 
         <p
           style={{
-            color: 'var(--color-foreground-subtle)',
+            color: '#B5BEC7',
             fontSize: 'var(--text-body)',
             lineHeight: 1.6,
             marginBottom: '28px',
           }}
         >
-          Your registration has been received successfully. Your account is currently pending authorization by a <strong style={{ color: 'var(--color-accent)' }}>Super Admin</strong>.
+          Your registration has been received successfully. Your account is currently pending authorization by a <strong style={{ color: '#C6A15B' }}>Super Admin</strong>.
         </p>
 
         <div
           style={{
-            background: 'var(--color-warning-soft)',
-            border: '1px solid var(--color-border)',
+            background: 'rgba(198, 161, 91, 0.15)',
+            border: '1px solid rgba(198, 161, 91, 0.3)',
             padding: '16px',
             borderRadius: 'var(--radius-sm)',
-            color: 'var(--color-warning)',
+            color: '#C6A15B',
             fontSize: 'var(--text-sm)',
             marginBottom: '32px',
           }}
@@ -82,15 +76,18 @@ export default function PendingApprovalPage() {
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px' }}>
           <button
             onClick={() => window.location.reload()}
+            onMouseEnter={() => setBtnHover(true)}
+            onMouseLeave={() => setBtnHover(false)}
             style={{
-              background: 'var(--color-surface-sunken)',
-              border: '1px solid var(--color-border)',
-              color: 'var(--color-foreground)',
+              background: btnHover ? '#1D2A36' : '#17222D',
+              border: '1px solid #263541',
+              color: '#B5BEC7',
               padding: '10px 20px',
               borderRadius: 'var(--radius-sm)',
               cursor: 'pointer',
               fontWeight: 600,
               fontSize: 'var(--text-sm)',
+              transition: 'background-color 0.2s ease',
             }}
           >
             🔄 Check Approval Status

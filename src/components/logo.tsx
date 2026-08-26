@@ -14,11 +14,11 @@ const WORDMARK_FONT = "var(--font-sans), 'Plus Jakarta Sans', system-ui, sans-se
 function Mark() {
   return (
     <>
-      <g fill="var(--color-accent)">
+      <g fill="var(--logo-gold, #C6A15B)">
         <path d={MARK_BRONZE_OUTER} />
         <path d={MARK_BRONZE_INNER} />
       </g>
-      <path fill="currentColor" d={MARK_FOREGROUND} />
+      <path fill="var(--heading-text, #F4F1E9)" d={MARK_FOREGROUND} />
     </>
   );
 }
@@ -33,7 +33,6 @@ export interface LogoProps {
 
 /**
  * Gulf Connect Consultancy logo, matching the public site lockup.
- * Bronze strokes follow `--color-accent`; the rest inherits `currentColor`.
  */
 export function Logo({ variant = 'full', height = '2rem', className }: LogoProps) {
   if (variant === 'mark') {
@@ -62,12 +61,12 @@ export function Logo({ variant = 'full', height = '2rem', className }: LogoProps
     >
       <Mark />
       <g fontFamily={WORDMARK_FONT} fontSize="26.07" fontWeight="700">
-        <text fill="var(--color-accent)" transform="translate(83.85 32.28)">
+        <text fill="var(--logo-gold, #C6A15B)" transform="translate(83.85 32.28)">
           <tspan x="0" y="0">
             GULF CONNECT
           </tspan>
         </text>
-        <text fill="currentColor" transform="translate(83.85 61.14)">
+        <text fill="var(--heading-text, #F4F1E9)" transform="translate(83.85 61.14)">
           <tspan x="0" y="0">
             CONSU
           </tspan>

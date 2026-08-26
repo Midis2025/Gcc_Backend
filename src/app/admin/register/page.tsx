@@ -13,6 +13,7 @@ export default function AdminRegisterPage() {
   const [successMessage, setSuccessMessage] = useState('');
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [btnHover, setBtnHover] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && window.location.search) {
@@ -97,7 +98,7 @@ export default function AdminRegisterPage() {
         justifyContent: 'center',
         minHeight: '100vh',
         padding: '24px',
-        background: 'radial-gradient(130% 115% at 78% 46%, #16202c 0%, #0c141d 38%, #080f16 72%, #05090e 100%)',
+        background: '#101821',
         position: 'relative',
         boxSizing: 'border-box',
       }}
@@ -106,23 +107,22 @@ export default function AdminRegisterPage() {
         style={{
           width: '100%',
           maxWidth: '460px',
-          background: 'linear-gradient(152deg, #16202cf2 0%, #0c141de6 52%, #0a1017f2 100%)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid var(--color-border)',
-          borderTop: '2px solid var(--color-accent)',
+          background: '#17222D',
+          border: '1px solid #263541',
+          borderTop: '2px solid #C6A15B',
+          borderRadius: 'var(--radius-md)',
           padding: '48px 40px',
-          boxShadow: '0 40px 90px -40px #05090ee6',
           zIndex: 10,
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', color: 'var(--color-foreground)' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', color: '#F4F1E9' }}>
             <Logo variant="mark" height="3.375rem" />
           </div>
-          <h1 style={{ color: 'var(--color-foreground)', margin: 0, fontSize: 'var(--text-h2)', fontWeight: 700, letterSpacing: 'var(--text-h2-ls)' }}>
+          <h1 style={{ color: '#F4F1E9', margin: 0, fontSize: 'var(--text-h2)', fontWeight: 700 }}>
             Admin Registration
           </h1>
-          <p style={{ color: 'var(--color-foreground-subtle)', fontSize: 'var(--text-sm)', marginTop: '8px' }}>
+          <p style={{ color: '#788692', fontSize: 'var(--text-sm)', marginTop: '8px' }}>
             1st registrant is automatically assigned Super Admin
           </p>
         </div>
@@ -130,12 +130,13 @@ export default function AdminRegisterPage() {
         {error && (
           <div
             style={{
-              background: 'var(--color-danger-soft)',
-              borderLeft: '3px solid var(--color-danger-line)',
-              color: 'var(--color-danger)',
+              background: 'rgba(200, 121, 121, 0.15)',
+              borderLeft: '3px solid #C87979',
+              color: '#C87979',
               padding: '14px 16px',
               fontSize: 'var(--text-sm)',
               marginBottom: '24px',
+              borderRadius: 'var(--radius-sm)',
             }}
           >
             {error}
@@ -145,13 +146,14 @@ export default function AdminRegisterPage() {
         {successMessage && (
           <div
             style={{
-              background: isSuperAdmin ? 'var(--color-success-soft)' : 'var(--color-warning-soft)',
-              borderLeft: `3px solid ${isSuperAdmin ? 'var(--color-success)' : 'var(--color-warning)'}`,
-              color: isSuperAdmin ? 'var(--color-success)' : 'var(--color-warning)',
+              background: isSuperAdmin ? 'rgba(127, 198, 154, 0.15)' : 'rgba(198, 161, 91, 0.15)',
+              borderLeft: `3px solid ${isSuperAdmin ? '#7FC69A' : '#C6A15B'}`,
+              color: isSuperAdmin ? '#7FC69A' : '#C6A15B',
               padding: '16px',
               fontSize: 'var(--text-sm)',
               marginBottom: '24px',
               lineHeight: '1.5',
+              borderRadius: 'var(--radius-sm)',
             }}
           >
             <strong style={{ display: 'block', fontSize: 'var(--text-body)', marginBottom: '4px' }}>
@@ -163,8 +165,8 @@ export default function AdminRegisterPage() {
 
         <div onKeyDown={handleKeyDown} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
-            <label className="gcc-label" style={{ display: 'block', marginBottom: '8px' }}>
-              Full Name <span style={{ color: 'var(--color-accent)' }}>*</span>
+            <label className="gcc-label" style={{ display: 'block', marginBottom: '8px', color: '#788692' }}>
+              Full Name <span style={{ color: '#C6A15B' }}>*</span>
             </label>
             <input
               type="text"
@@ -176,10 +178,11 @@ export default function AdminRegisterPage() {
               style={{
                 width: '100%',
                 padding: '14px 16px',
-                background: 'var(--color-surface-sunken)',
-                border: '1px solid var(--color-border)',
-                color: 'var(--color-foreground)',
+                background: '#101821',
+                border: '1px solid #263541',
+                color: '#F4F1E9',
                 fontSize: 'var(--text-body)',
+                borderRadius: 'var(--radius-sm)',
                 boxSizing: 'border-box',
                 outline: 'none',
               }}
@@ -187,8 +190,8 @@ export default function AdminRegisterPage() {
           </div>
 
           <div>
-            <label className="gcc-label" style={{ display: 'block', marginBottom: '8px' }}>
-              Work Email <span style={{ color: 'var(--color-accent)' }}>*</span>
+            <label className="gcc-label" style={{ display: 'block', marginBottom: '8px', color: '#788692' }}>
+              Work Email <span style={{ color: '#C6A15B' }}>*</span>
             </label>
             <input
               type="email"
@@ -200,10 +203,11 @@ export default function AdminRegisterPage() {
               style={{
                 width: '100%',
                 padding: '14px 16px',
-                background: 'var(--color-surface-sunken)',
-                border: '1px solid var(--color-border)',
-                color: 'var(--color-foreground)',
+                background: '#101821',
+                border: '1px solid #263541',
+                color: '#F4F1E9',
                 fontSize: 'var(--text-body)',
+                borderRadius: 'var(--radius-sm)',
                 boxSizing: 'border-box',
                 outline: 'none',
               }}
@@ -211,8 +215,8 @@ export default function AdminRegisterPage() {
           </div>
 
           <div>
-            <label className="gcc-label" style={{ display: 'block', marginBottom: '8px' }}>
-              Password <span style={{ color: 'var(--color-accent)' }}>*</span>
+            <label className="gcc-label" style={{ display: 'block', marginBottom: '8px', color: '#788692' }}>
+              Password <span style={{ color: '#C6A15B' }}>*</span>
             </label>
             <input
               type="password"
@@ -224,10 +228,11 @@ export default function AdminRegisterPage() {
               style={{
                 width: '100%',
                 padding: '14px 16px',
-                background: 'var(--color-surface-sunken)',
-                border: '1px solid var(--color-border)',
-                color: 'var(--color-foreground)',
+                background: '#101821',
+                border: '1px solid #263541',
+                color: '#F4F1E9',
                 fontSize: 'var(--text-body)',
+                borderRadius: 'var(--radius-sm)',
                 boxSizing: 'border-box',
                 outline: 'none',
               }}
@@ -238,28 +243,30 @@ export default function AdminRegisterPage() {
             type="button"
             onClick={() => handleRegister()}
             disabled={loading}
+            onMouseEnter={() => setBtnHover(true)}
+            onMouseLeave={() => setBtnHover(false)}
             style={{
-              background: 'var(--color-accent)',
-              color: 'var(--color-foreground-on-solid)',
+              background: loading ? '#788692' : btnHover ? '#D4B16B' : '#C6A15B',
+              color: '#101821',
               border: 'none',
               padding: '16px',
               fontWeight: 700,
               fontSize: 'var(--text-sm)',
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
+              borderRadius: 'var(--radius-sm)',
               cursor: loading ? 'not-allowed' : 'pointer',
               marginTop: '10px',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 4px 20px #b8945f40',
+              transition: 'background-color 0.2s ease',
             }}
           >
             {loading ? 'Submitting...' : 'Register Admin Account ➔'}
           </button>
         </div>
 
-        <div style={{ marginTop: '32px', textAlign: 'center', fontSize: 'var(--text-sm)', color: 'var(--color-foreground-subtle)' }}>
+        <div style={{ marginTop: '32px', textAlign: 'center', fontSize: 'var(--text-sm)', color: '#788692' }}>
           Already registered?{' '}
-          <Link href="/admin/login" style={{ color: 'var(--color-accent)', textDecoration: 'none', fontWeight: 600 }}>
+          <Link href="/admin/login" style={{ color: '#C6A15B', textDecoration: 'none', fontWeight: 600 }}>
             Sign in here
           </Link>
         </div>

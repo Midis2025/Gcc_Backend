@@ -1,5 +1,5 @@
 import React from 'react';
-import { AdminNavbar } from '@/components/admin-navbar';
+import { AdminShell } from '@/components/admin-shell';
 
 export const metadata = {
   title: 'GCC CMS Admin Portal',
@@ -7,10 +7,5 @@ export const metadata = {
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-canvas)', color: 'var(--color-foreground)' }}>
-      <AdminNavbar />
-      <main>{children}</main>
-    </div>
-  );
+  return <AdminShell>{children}</AdminShell>;
 }

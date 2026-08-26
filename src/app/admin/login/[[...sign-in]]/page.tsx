@@ -37,7 +37,7 @@ export default async function AdminLoginPage() {
         justifyContent: 'center',
         minHeight: '100vh',
         padding: '24px',
-        background: 'radial-gradient(130% 115% at 78% 46%, #16202c 0%, #0c141d 38%, #080f16 72%, #05090e 100%)',
+        background: '#101821',
       }}
     >
       <SignIn routing="hash" signUpUrl="/sign-up" forceRedirectUrl="/admin/dashboard" />

@@ -5,103 +5,112 @@
  */
 
 :root {
-  /* ---- Brand core palette (verbatim from the public site) ---- */
-  --midnight: #0c141d;
-  --midnight-soft: #16202c;
-  --midnight-line: #22303f;
+  /* ---- GCC Admin Palette Tokens ---- */
+  --navbar-bg: #0B1118;
+  --main-bg: #101821;
+  --card-bg: #17222D;
+  --card-hover: #1D2A36;
+  --border-color: #263541;
+  --primary-gold: #C6A15B;
+  --gold-hover: #D4B16B;
+  --logo-gold: #C6A15B;
+  --heading-text: #F4F1E9;
+  --body-text: #B5BEC7;
+  --muted-text: #788692;
+  --success-color: #7FC69A;
+  --pending-color: #C6A15B;
+  --danger-color: #C87979;
 
-  --bronze: #7a5f36;
-  --bronze-bright: #b8945f;
-  --bronze-hover: #cba871;
+  /* ---- Brand core palette ---- */
+  --midnight: #0B1118;
+  --midnight-soft: #17222D;
+  --midnight-line: #263541;
 
-  --ivory: #faf8f4;
-  --stone: #efeae1;
-  --stone-deep: #e2dbcf;
-  --graphite: #171c22;
-  --grey: #5f666e;
+  --bronze: #6F5A36;
+  --bronze-bright: #C6A15B;
+  --bronze-hover: #D4B16B;
+
+  --ivory: #F4F1E9;
+  --stone: #B5BEC7;
+  --graphite: #101821;
+  --grey: #788692;
 
   /* ---- Semantic surfaces ---- */
-  --color-canvas: var(--midnight);
-  --color-surface: var(--midnight-soft);
-  --color-surface-sunken: var(--midnight);
-  --color-surface-raised: #1c2836;
+  --color-canvas: var(--main-bg);
+  --color-surface: var(--card-bg);
+  --color-surface-sunken: var(--main-bg);
+  --color-surface-raised: var(--card-hover);
 
-  --color-border: var(--midnight-line);
-  --color-border-subtle: #faf8f41a;
+  --color-border: var(--border-color);
+  --color-border-subtle: rgba(38, 53, 65, 0.6);
 
   /* ---- Semantic foreground ---- */
-  --color-foreground: #f4f1eb;
-  --color-foreground-muted: #f4f1ebd1;
-  --color-foreground-subtle: #f4f1ebb8;
-  --color-foreground-faint: #f4f1eb94;
+  --color-foreground: var(--heading-text);
+  --color-foreground-muted: var(--body-text);
+  --color-foreground-subtle: var(--muted-text);
+  --color-foreground-faint: #788692;
 
   /* ---- Accent ---- */
-  --color-accent: var(--bronze-bright);
-  --color-accent-hover: var(--bronze-hover);
-  --color-accent-foreground: var(--midnight);
-  --color-accent-soft: #b8945f26;
-  --color-accent-line: #b8945f59;
-  /* Dark text for use on any solid brand or status fill. */
-  --color-foreground-on-solid: var(--midnight);
-  --color-ring: var(--bronze-bright);
+  --color-accent: var(--primary-gold);
+  --color-accent-hover: var(--gold-hover);
+  --color-accent-foreground: var(--main-bg);
+  --color-accent-soft: rgba(198, 161, 91, 0.15);
+  --color-accent-line: rgba(198, 161, 91, 0.35);
+  --color-foreground-on-solid: var(--main-bg);
+  --color-ring: var(--primary-gold);
 
-  /* ---- Status ----
-   * danger is the site's dark-theme token. success/warning are derived from the
-   * brand's own hues, lifted for legibility on midnight surfaces (the public
-   * site only ships a light-surface success and has no warning token).
-   */
-  --color-danger: #f0918d;
-  --color-danger-soft: #f0918d26;
-  --color-danger-line: #f0918d59;
+  /* ---- Status ---- */
+  --color-danger: var(--danger-color);
+  --color-danger-soft: rgba(200, 121, 121, 0.15);
+  --color-danger-line: rgba(200, 121, 121, 0.35);
 
-  --color-success: #7fbf9a;
-  --color-success-soft: #7fbf9a26;
+  --color-success: var(--success-color);
+  --color-success-soft: rgba(127, 198, 154, 0.15);
 
-  --color-warning: #d8a34a;
-  --color-warning-soft: #d8a34a26;
+  --color-warning: var(--primary-gold);
+  --color-warning-soft: rgba(198, 161, 91, 0.15);
 
-  --color-neutral-soft: #f4f1eb1a;
+  --color-neutral-soft: rgba(181, 190, 199, 0.1);
 
-  /* ---- Type ----
-   * The brand's tracking/weight language at CMS scale (the marketing clamps
-   * are sized for a landing page, not a data-dense admin view).
-   */
+  /* ---- Type ---- */
   --font-sans: var(--font-primary), "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-heading), "Outfit", var(--font-sans);
+  --font-mono: var(--font-numeral), "JetBrains Mono", monospace;
 
   --text-h1: clamp(1.75rem, 1.4rem + 1.2vw, 2.25rem);
-  --text-h1-ls: -0.03em;
-  --text-h1-lh: 1.1;
+  --text-h1-ls: -0.035em;
+  --text-h1-lh: 1.12;
 
   --text-h2: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
-  --text-h2-ls: -0.026em;
-  --text-h2-lh: 1.16;
+  --text-h2-ls: -0.028em;
+  --text-h2-lh: 1.18;
 
   --text-h3: 1.125rem;
-  --text-h3-ls: -0.018em;
+  --text-h3-ls: -0.02em;
   --text-h3-lh: 1.28;
 
-  --text-numeral: clamp(2rem, 1.6rem + 1.4vw, 2.75rem);
+  --text-numeral: clamp(2.2rem, 1.7rem + 1.5vw, 3rem);
   --text-numeral-ls: -0.04em;
   --text-numeral-lh: 1;
 
   --text-lead: 1.0625rem;
-  --text-lead-ls: -0.005em;
+  --text-lead-ls: -0.008em;
   --text-lead-lh: 1.6;
 
   --text-label: 0.6875rem;
-  --text-label-ls: 0.16em;
+  --text-label-ls: 0.18em;
 
   --text-body: 0.9375rem;
   --text-sm: 0.875rem;
   --text-xs: 0.75rem;
 
-  /* ---- Shape + depth (from the site's token set) ---- */
+  /* ---- Shape + depth ---- */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
-  --shadow-md: 0 12px 28px -12px #0c141d29;
-  --shadow-lg: 0 34px 70px -28px #0c141d47;
-  --shadow-float: 0 44px 90px -34px #0c141d6b;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-float: 0 20px 40px -10px rgba(11, 17, 24, 0.7);
 
   --header-h: 4.5rem;
   --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
@@ -133,8 +142,10 @@ h1,
 h2,
 h3,
 h4 {
+  font-family: var(--font-display);
   font-weight: 700;
   margin: 0;
+  font-optical-sizing: auto;
 }
 
 h1 {
@@ -157,23 +168,29 @@ h3 {
 
 /* ---- Brand type utilities ---- */
 .gcc-label {
+  font-family: var(--font-display);
   font-size: var(--text-label);
   letter-spacing: var(--text-label-ls);
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-foreground-subtle);
   line-height: 1.2;
+  font-feature-settings: 'cpsp' 1, 'ss01' 1;
 }
 
 .gcc-numeral {
+  font-family: var(--font-mono);
   font-size: var(--text-numeral);
   letter-spacing: var(--text-numeral-ls);
   line-height: var(--text-numeral-lh);
   font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'lnum' 1, 'zero' 1, 'cv01' 1;
+  font-variant-numeric: tabular-nums lining-nums slashed-zero;
+  font-optical-sizing: auto;
 }
 
 .gcc-lead {
+  font-family: var(--font-sans);
   font-size: var(--text-lead);
   letter-spacing: var(--text-lead-ls);
   line-height: var(--text-lead-lh);
@@ -230,4 +247,26 @@ thead th {
   font-weight: 600;
   color: var(--color-foreground-subtle);
   white-space: nowrap;
+}
+
+/* ---- GCC Admin Sidebar & Layout Responsiveness ---- */
+.gcc-admin-main-wrapper {
+  margin-left: 260px;
+  min-height: 100vh;
+  transition: margin-left 250ms ease-in-out;
+}
+
+@media (max-width: 768px) {
+  .gcc-admin-sidebar {
+    transform: translateX(-100%);
+  }
+  .gcc-admin-sidebar.mobile-open {
+    transform: translateX(0) !important;
+  }
+  .gcc-admin-main-wrapper {
+    margin-left: 0 !important;
+  }
+  .gcc-mobile-menu-btn {
+    display: flex !important;
+  }
 }
