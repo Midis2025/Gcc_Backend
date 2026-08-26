@@ -1,39 +1,36 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiFetch, getStoredUser, getToken, AuthUser } from '@/utils/auth-utils';
-import { AdminRole, AdminStatus, AdminUser } from '@/models/admin.model';
+import { useUser } from '@clerk/nextjs';
+import { apiFetch } from '@/utils/auth-utils';
+
+export interface ClerkAdminUser {
+  id: string;
+  name: string;
+  email: string;
+  imageUrl?: string;
+  role: 'SUPER_ADMIN' | 'ADMIN';
+  status: 'ACTIVE' | 'PENDING';
+  approved: boolean;
+  createdAt: string;
+}
 
 export default function AdminUsersGovernancePage() {
-  const [admins, setAdmins] = useState<AdminUser[]>([]);
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const { user: clerkCurrentUser } = useUser();
+  const [admins, setAdmins] = useState<ClerkAdminUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const router = useRouter();
 
   useEffect(() => {
-    const token = getToken();
-    const user = getStoredUser();
-
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
-
-    if (user?.role !== 'SUPER_ADMIN') {
-      setError('Super Admin authority is required to access Admin User Governance.');
-      setLoading(false);
-      return;
-    }
-
-    setCurrentUser(user);
     fetchAdmins();
-  }, [router]);
+  }, []);
 
   const fetchAdmins = async () => {
     setLoading(true);
-    const res = await apiFetch<AdminUser[]>('/api/admin/users');
+    const res = await apiFetch<ClerkAdminUser[]>('/api/admin/users');
     if (res.success && res.data) {
       setAdmins(res.data);
     } else {
@@ -42,8 +39,8 @@ export default function AdminUsersGovernancePage() {
     setLoading(false);
   };
 
-  const handleUpdate = async (id: string, updateData: { status?: AdminStatus; role?: AdminRole }) => {
-    const res = await apiFetch<AdminUser>(`/api/admin/users/${id}`, {
+  const handleUpdate = async (id: string, updateData: { status?: 'ACTIVE' | 'PENDING'; approved?: boolean; role?: 'SUPER_ADMIN' | 'ADMIN' }) => {
+    const res = await apiFetch<ClerkAdminUser>(`/api/admin/users/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(updateData),
     });
@@ -51,12 +48,12 @@ export default function AdminUsersGovernancePage() {
     if (res.success) {
       fetchAdmins();
     } else {
-      alert(res.message || 'Failed to update admin');
+      alert(res.message || 'Failed to update admin user');
     }
   };
 
   const handleDelete = async (id: string, email: string) => {
-    if (currentUser?.id === id) {
+    if (clerkCurrentUser?.id === id) {
       alert('Super Admin cannot delete their own active account.');
       return;
     }
@@ -95,6 +92,19 @@ export default function AdminUsersGovernancePage() {
           <h1 style={{ color: 'var(--color-foreground)', margin: 0 }}>Super Admin Governance</h1>
           <p style={{ color: 'var(--color-foreground-subtle)', margin: '6px 0 0 0', fontSize: 'var(--text-body)' }}>Approve, reject, or manage roles for admin registrants</p>
         </div>
+        <button
+          onClick={fetchAdmins}
+          style={{
+            background: 'var(--color-surface-sunken)',
+            border: '1px solid var(--color-border)',
+            color: 'var(--color-foreground)',
+            padding: '8px 16px',
+            borderRadius: 'var(--radius-sm)',
+            cursor: 'pointer',
+          }}
+        >
+          🔄 Refresh User List
+        </button>
       </div>
 
       <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
@@ -105,7 +115,7 @@ export default function AdminUsersGovernancePage() {
                 <th style={{ padding: '14px' }}>Admin Name</th>
                 <th style={{ padding: '14px' }}>Email Address</th>
                 <th style={{ padding: '14px' }}>Role</th>
-                <th style={{ padding: '14px' }}>Status</th>
+                <th style={{ padding: '14px' }}>Approval Status</th>
                 <th style={{ padding: '14px' }}>Registered Date</th>
                 <th style={{ padding: '14px', textAlign: 'right' }}>Actions</th>
               </tr>
@@ -118,8 +128,8 @@ export default function AdminUsersGovernancePage() {
                   <td style={{ padding: '14px' }}>
                     <select
                       value={adm.role}
-                      onChange={(e) => handleUpdate(adm.id, { role: e.target.value as AdminRole })}
-                      disabled={currentUser?.id === adm.id}
+                      onChange={(e) => handleUpdate(adm.id, { role: e.target.value as 'SUPER_ADMIN' | 'ADMIN' })}
+                      disabled={clerkCurrentUser?.id === adm.id}
                       style={{
                         background: 'var(--color-surface-sunken)',
                         border: '1px solid var(--color-border)',
@@ -142,62 +152,41 @@ export default function AdminUsersGovernancePage() {
                         fontSize: 'var(--text-xs)',
                         fontWeight: 600,
                         backgroundColor:
-                          adm.status === 'APPROVED'
+                          adm.approved
                             ? 'var(--color-success-soft)'
-                            : adm.status === 'PENDING_APPROVAL'
-                            ? 'var(--color-warning-soft)'
-                            : 'var(--color-danger-soft)',
+                            : 'var(--color-warning-soft)',
                         color:
-                          adm.status === 'APPROVED'
+                          adm.approved
                             ? 'var(--color-success)'
-                            : adm.status === 'PENDING_APPROVAL'
-                            ? 'var(--color-warning)'
-                            : 'var(--color-danger)',
+                            : 'var(--color-warning)',
                       }}
                     >
-                      {adm.status}
+                      {adm.approved ? 'APPROVED (ACTIVE)' : 'PENDING APPROVAL'}
                     </span>
                   </td>
                   <td style={{ padding: '14px', color: 'var(--color-foreground-subtle)' }}>
                     {new Date(adm.createdAt).toLocaleDateString()}
                   </td>
                   <td style={{ padding: '14px', textAlign: 'right' }}>
-                    {adm.status === 'PENDING_APPROVAL' && (
-                      <>
-                        <button
-                          onClick={() => handleUpdate(adm.id, { status: 'APPROVED' })}
-                          style={{
-                            background: 'var(--color-success)',
-                            color: 'var(--color-foreground-on-solid)',
-                            border: 'none',
-                            padding: '4px 10px',
-                            borderRadius: 'var(--radius-sm)',
-                            fontWeight: 600,
-                            fontSize: 'var(--text-xs)',
-                            marginRight: '6px',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleUpdate(adm.id, { status: 'REJECTED' })}
-                          style={{
-                            background: 'var(--color-danger-soft)',
-                            border: '1px solid var(--color-danger-line)',
-                            color: 'var(--color-danger)',
-                            padding: '4px 10px',
-                            borderRadius: 'var(--radius-sm)',
-                            fontSize: 'var(--text-xs)',
-                            marginRight: '6px',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          Reject
-                        </button>
-                      </>
+                    {!adm.approved && (
+                      <button
+                        onClick={() => handleUpdate(adm.id, { approved: true, status: 'ACTIVE' })}
+                        style={{
+                          background: 'var(--color-success)',
+                          color: 'var(--color-foreground-on-solid)',
+                          border: 'none',
+                          padding: '4px 10px',
+                          borderRadius: 'var(--radius-sm)',
+                          fontWeight: 600,
+                          fontSize: 'var(--text-xs)',
+                          marginRight: '6px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        ✓ Approve User
+                      </button>
                     )}
-                    {currentUser?.id !== adm.id && (
+                    {clerkCurrentUser?.id !== adm.id && (
                       <button
                         onClick={() => handleDelete(adm.id, adm.email)}
                         style={{
@@ -210,7 +199,7 @@ export default function AdminUsersGovernancePage() {
                           fontSize: 'var(--text-xs)',
                         }}
                       >
-                        Delete
+                        Remove
                       </button>
                     )}
                   </td>

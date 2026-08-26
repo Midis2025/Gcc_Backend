@@ -1,6 +1,5 @@
-import { NextRequest } from 'next/server';
-import { adminController } from '@/controllers/admin.controller';
+import { NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
-  return adminController.login(req);
+export async function POST() {
+  return NextResponse.json({ message: 'Authentication is managed via Clerk' }, { status: 400 });
 }

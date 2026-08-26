@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -27,15 +29,17 @@ export default function AdminDashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      setLoading(false);
-      router.push('/admin/login');
-      return;
-    }
-
+    /*
+    // OLD JWT TOKEN CHECK (COMMENTED OUT) - Route protection is handled by Clerk Middleware
+    // const token = getToken();
+    // if (!token) {
+    //   setLoading(false);
+    //   router.push('/admin/login');
+    //   return;
+    // }
+    */
     fetchStats();
-  }, [router]);
+  }, []);
 
   const fetchStats = async () => {
     setLoading(true);
@@ -43,10 +47,13 @@ export default function AdminDashboardPage() {
     if (res.success && res.data) {
       setStats(res.data);
     } else {
-      if (res.message?.includes('Unauthorized') || res.message?.includes('expired') || res.message?.includes('invalid')) {
-        router.push('/admin/login');
-        return;
-      }
+      /*
+      // OLD JWT UNAUTHORIZED CHECK (COMMENTED OUT)
+      // if (res.message?.includes('Unauthorized') || res.message?.includes('expired') || res.message?.includes('invalid')) {
+      //   router.push('/admin/login');
+      //   return;
+      // }
+      */
       setError(res.message || 'Failed to load dashboard metrics');
     }
     setLoading(false);

@@ -32,7 +32,7 @@ export class ContactController {
   async getFilteredEnquiries(req: NextRequest) {
     try {
       logRequest(req);
-      verifyAuthToken(req); // Guard: Requires Admin authentication
+      await verifyAuthToken(); // Guard: Requires Admin authentication
 
       const { searchParams } = new URL(req.url);
       const search = searchParams.get('search') || undefined;
@@ -58,7 +58,7 @@ export class ContactController {
   async getCmsStats(req: NextRequest) {
     try {
       logRequest(req);
-      verifyAuthToken(req); // Guard: Requires Admin authentication
+      await verifyAuthToken(); // Guard: Requires Admin authentication
 
       const stats = await this.service.getCmsDashboardStats();
       return ApiResponse.success(stats, 'CMS Dashboard stats retrieved successfully');
@@ -80,7 +80,7 @@ export class ContactController {
   async getEnquiryById(req: NextRequest, id: string) {
     try {
       logRequest(req);
-      verifyAuthToken(req); // Guard: Requires Admin authentication
+      await verifyAuthToken(); // Guard: Requires Admin authentication
       const enquiry = await this.service.getEnquiryById(id);
       return ApiResponse.success(enquiry, 'Enquiry details retrieved successfully');
     } catch (error) {
@@ -91,7 +91,7 @@ export class ContactController {
   async updateStatus(req: NextRequest, id: string) {
     try {
       logRequest(req);
-      verifyAuthToken(req); // Guard: Requires Admin authentication
+      await verifyAuthToken(); // Guard: Requires Admin authentication
       const body = await req.json();
       const { status } = updateEnquiryStatusSchema.parse(body);
 
@@ -105,7 +105,7 @@ export class ContactController {
   async deleteEnquiry(req: NextRequest, id: string) {
     try {
       logRequest(req);
-      verifyAuthToken(req); // Guard: Requires Admin authentication
+      await verifyAuthToken(); // Guard: Requires Admin authentication
       await this.service.deleteEnquiry(id);
       return ApiResponse.success(null, 'Enquiry removed successfully');
     } catch (error) {

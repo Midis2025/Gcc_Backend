@@ -1,54 +1,28 @@
 import { NextRequest } from 'next/server';
-import { adminService, AdminService } from '@/services/admin.service';
-import { loginAdminSchema, registerAdminSchema, updateAdminSchema } from '@/models/admin.model';
 import { ApiResponse } from '@/utils/api-response';
 import { handleControllerError } from '@/middlewares/error.middleware';
 import { logRequest } from '@/middlewares/logger.middleware';
 import { requireSuperAdmin, verifyAuthToken } from '@/middlewares/auth.middleware';
-import { checkLoginRateLimit } from '@/middlewares/rate-limit.middleware';
+import { clerkClient } from '@clerk/nextjs/server';
 
 export class AdminController {
-  constructor(private service: AdminService = adminService) {}
-
-  async register(req: NextRequest) {
-    try {
-      logRequest(req);
-      const body = await req.json();
-      const validatedData = registerAdminSchema.parse(body);
-
-      const result = await this.service.register(validatedData);
-
-      const message = result.isSuperAdmin
-        ? 'Congratulations! You are the first registered user and have been granted Super Admin status.'
-        : 'Registration submitted successfully! Your account is pending approval by a Super Admin.';
-
-      return ApiResponse.created(result, message);
-    } catch (error) {
-      return handleControllerError(error);
-    }
-  }
-
-  async login(req: NextRequest) {
-    try {
-      logRequest(req);
-      checkLoginRateLimit(req); // Throttling: 5 login attempts per IP per 1 minute
-
-      const body = await req.json();
-      const validatedData = loginAdminSchema.parse(body);
-
-      const result = await this.service.login(validatedData);
-      return ApiResponse.success(result, 'Admin authenticated successfully');
-    } catch (error) {
-      return handleControllerError(error);
-    }
-  }
-
   async getMe(req: NextRequest) {
     try {
       logRequest(req);
-      const tokenPayload = verifyAuthToken(req);
-      const admin = await this.service.getAdminById(tokenPayload.sub);
-      return ApiResponse.success(admin, 'Current admin profile retrieved');
+      const { userId } = await verifyAuthToken();
+      const client = await clerkClient();
+      const user = await client.users.getUser(userId);
+
+      return ApiResponse.success(
+        {
+          id: user.id,
+          name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.emailAddresses[0]?.emailAddress,
+          email: user.emailAddresses[0]?.emailAddress,
+          role: (user.publicMetadata?.role as string) || 'ADMIN',
+          approved: !!user.publicMetadata?.approved,
+        },
+        'Current admin profile retrieved'
+      );
     } catch (error) {
       return handleControllerError(error);
     }
@@ -57,8 +31,21 @@ export class AdminController {
   async getAllAdmins(req: NextRequest) {
     try {
       logRequest(req);
-      requireSuperAdmin(req); // Guard: Super Admin authority required
-      const admins = await this.service.getAllAdmins();
+      await requireSuperAdmin(); // Guard: Super Admin authority required
+      const client = await clerkClient();
+      const { data: users } = await client.users.getUserList({ limit: 100 });
+
+      const admins = users.map((u) => ({
+        id: u.id,
+        name: `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.emailAddresses[0]?.emailAddress || 'Admin User',
+        email: u.emailAddresses[0]?.emailAddress || '',
+        imageUrl: u.imageUrl,
+        role: (u.publicMetadata?.role as string) || 'ADMIN',
+        status: u.publicMetadata?.approved ? 'ACTIVE' : 'PENDING',
+        approved: !!u.publicMetadata?.approved,
+        createdAt: new Date(u.createdAt).toISOString(),
+      }));
+
       return ApiResponse.success(admins, 'Admin users list retrieved');
     } catch (error) {
       return handleControllerError(error);
@@ -68,12 +55,32 @@ export class AdminController {
   async updateAdmin(req: NextRequest, id: string) {
     try {
       logRequest(req);
-      requireSuperAdmin(req); // Guard: Super Admin authority required
+      await requireSuperAdmin(); // Guard: Super Admin authority required
       const body = await req.json();
-      const validatedData = updateAdminSchema.parse(body);
+      const client = await clerkClient();
 
-      const updatedAdmin = await this.service.updateAdmin(id, validatedData);
-      return ApiResponse.success(updatedAdmin, 'Admin role/status updated successfully');
+      const existingUser = await client.users.getUser(id);
+      const currentMeta = existingUser.publicMetadata || {};
+
+      const updatedMeta = {
+        ...currentMeta,
+        ...(body.role ? { role: body.role } : {}),
+        ...(body.status === 'ACTIVE' || body.approved === true ? { approved: true } : {}),
+        ...(body.status === 'PENDING' || body.approved === false ? { approved: false } : {}),
+      };
+
+      const updatedUser = await client.users.updateUserMetadata(id, {
+        publicMetadata: updatedMeta,
+      });
+
+      return ApiResponse.success(
+        {
+          id: updatedUser.id,
+          role: updatedUser.publicMetadata?.role,
+          approved: updatedUser.publicMetadata?.approved,
+        },
+        'Admin role/status updated successfully'
+      );
     } catch (error) {
       return handleControllerError(error);
     }
@@ -82,13 +89,15 @@ export class AdminController {
   async deleteAdmin(req: NextRequest, id: string) {
     try {
       logRequest(req);
-      const currentUser = requireSuperAdmin(req); // Guard: Super Admin authority required
+      const currentUser = await requireSuperAdmin(); // Guard: Super Admin authority required
 
-      if (currentUser.sub === id) {
+      if (currentUser.userId === id) {
         return ApiResponse.error('Super Admin cannot delete their own account', 400);
       }
 
-      await this.service.deleteAdmin(id);
+      const client = await clerkClient();
+      await client.users.deleteUser(id);
+
       return ApiResponse.success(null, 'Admin account removed successfully');
     } catch (error) {
       return handleControllerError(error);

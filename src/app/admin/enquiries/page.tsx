@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch, getToken } from '@/utils/auth-utils';
@@ -22,13 +24,16 @@ export default function AdminEnquiriesPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = getToken();
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
+    /*
+    // OLD JWT TOKEN CHECK (COMMENTED OUT) - Route protection handled by Clerk Middleware
+    // const token = getToken();
+    // if (!token) {
+    //   router.push('/admin/login');
+    //   return;
+    // }
+    */
     fetchEnquiries();
-  }, [search, statusFilter, page, router]);
+  }, [search, statusFilter, page]);
 
   const fetchEnquiries = async () => {
     setLoading(true);

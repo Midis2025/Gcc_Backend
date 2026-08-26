@@ -1,10 +1,28 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { getStoredUser, removeToken, AuthUser } from '@/utils/auth-utils';
+import { usePathname } from 'next/navigation';
 import { Logo } from '@/components/logo';
+import { Show, SignInButton, SignUpButton, UserButton, useUser } from '@clerk/nextjs';
+
+/*
+// ==================== OLD JWT NAVBAR STATE (COMMENTED OUT) ====================
+// import { useEffect, useState } from 'react';
+// import { useRouter } from 'next/navigation';
+// import { getStoredUser, removeToken, AuthUser } from '@/utils/auth-utils';
+//
+// const [user, setUser] = useState<AuthUser | null>(null);
+// useEffect(() => {
+//   setUser(getStoredUser());
+// }, [pathname]);
+//
+// const handleLogout = () => {
+//   removeToken();
+//   router.push('/admin/login');
+// };
+// ==============================================================================
+*/
 
 function navLinkStyle(active: boolean): React.CSSProperties {
   return {
@@ -22,22 +40,13 @@ function navLinkStyle(active: boolean): React.CSSProperties {
 }
 
 export function AdminNavbar() {
-  const [user, setUser] = useState<AuthUser | null>(null);
   const pathname = usePathname();
-  const router = useRouter();
+  const { user } = useUser();
+  const role = (user?.publicMetadata as Record<string, unknown>)?.role as string | undefined;
 
-  useEffect(() => {
-    setUser(getStoredUser());
-  }, [pathname]);
-
-  if (pathname === '/admin/login' || pathname === '/admin/register') {
+  if (pathname === '/admin/login' || pathname === '/admin/register' || pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up')) {
     return null;
   }
-
-  const handleLogout = () => {
-    removeToken();
-    router.push('/admin/login');
-  };
 
   return (
     <header
@@ -86,7 +95,7 @@ export function AdminNavbar() {
             <Link href="/admin/enquiries" style={navLinkStyle(pathname.startsWith('/admin/enquiries'))}>
               Contact Enquiries
             </Link>
-            {user?.role === 'SUPER_ADMIN' && (
+            {role === 'SUPER_ADMIN' && (
               <Link href="/admin/users" style={navLinkStyle(pathname.startsWith('/admin/users'))}>
                 Admin Governance
               </Link>
@@ -94,55 +103,69 @@ export function AdminNavbar() {
           </nav>
         </div>
 
-        {/* User Badge & Actions */}
-        {user && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ color: 'var(--color-foreground)', fontSize: 'var(--text-sm)', fontWeight: 600, letterSpacing: '-0.01em' }}>
-                {user.name}
-              </div>
-              <span
-                className="gcc-label"
+        {/* User Controls with Clerk */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <Show when="signed-out">
+            <SignInButton mode="modal">
+              <button
                 style={{
-                  display: 'inline-block',
-                  padding: '2px 8px',
+                  background: 'var(--color-accent)',
+                  color: 'var(--color-foreground-on-solid)',
+                  border: 'none',
+                  padding: '8px 16px',
                   borderRadius: 'var(--radius-sm)',
-                  backgroundColor: user.role === 'SUPER_ADMIN' ? 'var(--color-accent-soft)' : 'var(--color-neutral-soft)',
-                  color: user.role === 'SUPER_ADMIN' ? 'var(--color-accent)' : 'var(--color-foreground-subtle)',
-                  border: user.role === 'SUPER_ADMIN' ? '1px solid var(--color-accent-line)' : '1px solid var(--color-border)',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: 'var(--text-sm)',
                 }}
               >
-                {user.role}
-              </span>
-            </div>
+                Sign In
+              </button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <button
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--color-border)',
+                  color: 'var(--color-foreground)',
+                  padding: '8px 16px',
+                  borderRadius: 'var(--radius-sm)',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: 'var(--text-sm)',
+                }}
+              >
+                Sign Up
+              </button>
+            </SignUpButton>
+          </Show>
 
-            <button
-              onClick={handleLogout}
-              style={{
-                background: 'transparent',
-                border: '1px solid var(--color-border)',
-                color: 'var(--color-foreground)',
-                padding: '8px 16px',
-                borderRadius: 'var(--radius-sm)',
-                cursor: 'pointer',
-                fontSize: 'var(--text-sm)',
-                fontWeight: 600,
-                letterSpacing: '-0.01em',
-                transition: 'all 0.3s var(--ease-out-soft)',
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = 'var(--color-accent)';
-                e.currentTarget.style.color = 'var(--color-accent)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.borderColor = 'var(--color-border)';
-                e.currentTarget.style.color = 'var(--color-foreground)';
-              }}
-            >
-              Log Out
-            </button>
-          </div>
-        )}
+          <Show when="signed-in">
+            {user && (
+              <div style={{ textAlign: 'right', marginRight: '8px' }}>
+                <div style={{ color: 'var(--color-foreground)', fontSize: 'var(--text-sm)', fontWeight: 600, letterSpacing: '-0.01em' }}>
+                  {user.fullName || user.primaryEmailAddress?.emailAddress}
+                </div>
+                {role && (
+                  <span
+                    className="gcc-label"
+                    style={{
+                      display: 'inline-block',
+                      padding: '2px 8px',
+                      borderRadius: 'var(--radius-sm)',
+                      backgroundColor: role === 'SUPER_ADMIN' ? 'var(--color-accent-soft)' : 'var(--color-neutral-soft)',
+                      color: role === 'SUPER_ADMIN' ? 'var(--color-accent)' : 'var(--color-foreground-subtle)',
+                      border: role === 'SUPER_ADMIN' ? '1px solid var(--color-accent-line)' : '1px solid var(--color-border)',
+                    }}
+                  >
+                    {role}
+                  </span>
+                )}
+              </div>
+            )}
+            <UserButton />
+          </Show>
+        </div>
       </div>
     </header>
   );
