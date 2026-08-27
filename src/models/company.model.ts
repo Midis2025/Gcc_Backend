@@ -26,7 +26,7 @@ export const createCompanySchema = z.object({
   company: z.string().min(1, 'Company name is required'),
   email: z.string().email('Please provide a valid work email address'),
   phone: z.string().optional().or(z.literal('')),
-  market: z.enum(['ae', 'sa', 'qa', 'kw', 'bh', 'om', 'intl']).optional().or(z.literal('')),
+  market: z.string().optional().or(z.literal('')),
   area: z.string().default('general'),
   message: z.string().min(10, 'Message outline must be at least 10 characters'),
   preferredDate: z.string().optional().or(z.literal('')),
