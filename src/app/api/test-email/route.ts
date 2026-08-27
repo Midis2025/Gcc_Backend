@@ -6,8 +6,8 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const targetEmail = searchParams.get('to') || process.env.SMTP_USER || env.SMTP_USER;
 
-  const smtpUser = process.env.SMTP_USER || env.SMTP_USER;
-  const smtpPass = process.env.SMTP_PASS || env.SMTP_PASS;
+  const smtpUser = (process.env.SMTP_USER || env.SMTP_USER || '').trim().replace(/^["']|["']$/g, '');
+  const smtpPass = (process.env.SMTP_PASS || env.SMTP_PASS || '').trim().replace(/\s+/g, '').replace(/^["']|["']$/g, '');
   const smtpHost = process.env.SMTP_HOST || env.SMTP_HOST || 'smtp.gmail.com';
   const smtpPort = parseInt(process.env.SMTP_PORT || String(env.SMTP_PORT || 587), 10);
   const smtpSecure = process.env.SMTP_SECURE === 'true';

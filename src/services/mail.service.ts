@@ -3,8 +3,8 @@ import { env } from '@/config/env';
 
 export class MailService {
   private getTransporter() {
-    const user = process.env.SMTP_USER || env.SMTP_USER;
-    const pass = process.env.SMTP_PASS || env.SMTP_PASS;
+    const user = (process.env.SMTP_USER || env.SMTP_USER || '').trim().replace(/^["']|["']$/g, '');
+    const pass = (process.env.SMTP_PASS || env.SMTP_PASS || '').trim().replace(/\s+/g, '').replace(/^["']|["']$/g, '');
     const host = process.env.SMTP_HOST || env.SMTP_HOST || 'smtp.gmail.com';
     const port = parseInt(process.env.SMTP_PORT || String(env.SMTP_PORT || 587), 10);
     const secure = process.env.SMTP_SECURE === 'true';
