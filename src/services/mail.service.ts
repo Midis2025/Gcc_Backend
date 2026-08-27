@@ -6,17 +6,17 @@ export class MailService {
     const user = process.env.SMTP_USER || env.SMTP_USER;
     const pass = process.env.SMTP_PASS || env.SMTP_PASS;
     const host = process.env.SMTP_HOST || env.SMTP_HOST || 'smtp.gmail.com';
-    const port = parseInt(process.env.SMTP_PORT || String(env.SMTP_PORT || 465), 10);
-    const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE !== 'false' : env.SMTP_SECURE;
+    const port = parseInt(process.env.SMTP_PORT || String(env.SMTP_PORT || 587), 10);
+    const secure = process.env.SMTP_SECURE === 'true';
 
     return nodemailer.createTransport({
       host,
       port,
       secure,
       auth: { user, pass },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      socketTimeout: 15000,
     });
   }
 
