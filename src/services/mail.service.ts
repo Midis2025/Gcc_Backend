@@ -2,15 +2,23 @@ import nodemailer from 'nodemailer';
 import { env } from '@/config/env';
 
 export class MailService {
-  private transporter = nodemailer.createTransport({
-    host: env.SMTP_HOST,
-    port: env.SMTP_PORT,
-    secure: env.SMTP_SECURE, // true for port 465 SSL
-    auth: {
-      user: env.SMTP_USER,
-      pass: env.SMTP_PASS,
-    },
-  });
+  private getTransporter() {
+    const user = process.env.SMTP_USER || env.SMTP_USER;
+    const pass = process.env.SMTP_PASS || env.SMTP_PASS;
+    const host = process.env.SMTP_HOST || env.SMTP_HOST || 'smtp.gmail.com';
+    const port = parseInt(process.env.SMTP_PORT || String(env.SMTP_PORT || 465), 10);
+    const secure = process.env.SMTP_SECURE ? process.env.SMTP_SECURE !== 'false' : env.SMTP_SECURE;
+
+    return nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: { user, pass },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+    });
+  }
 
   async sendMeetingEmails(data: {
     name: string;
@@ -22,10 +30,16 @@ export class MailService {
     area: string;
     message: string;
   }): Promise<void> {
-    if (!env.SMTP_USER || !env.SMTP_PASS) {
-      console.warn('[MailService] SMTP credentials missing in .env, skipping email delivery.');
+    const smtpUser = process.env.SMTP_USER || env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS || env.SMTP_PASS;
+    const adminEmail = process.env.CONTACT_NOTIFICATION_EMAIL || env.CONTACT_NOTIFICATION_EMAIL || smtpUser;
+
+    if (!smtpUser || !smtpPass) {
+      console.warn('[MailService] SMTP credentials missing in environment, skipping email delivery.');
       return;
     }
+
+    const transporter = this.getTransporter();
 
     const meetingLink = `https://meet.jit.si/GCC-Consultation-${data.enquiryId}`;
 
@@ -33,8 +47,8 @@ export class MailService {
       console.log(`[MailService] Sending automated emails via Nodemailer for enquiry ID: ${data.enquiryId}...`);
 
       // 📩 1. Thank-You Email to the USER (Client)
-      const userMailPromise = this.transporter.sendMail({
-        from: `"Gulf Connect Consultancy" <${env.SMTP_USER}>`,
+      const userMailPromise = transporter.sendMail({
+        from: `"Gulf Connect Consultancy" <${smtpUser}>`,
         to: data.email,
         subject: 'Meeting Confirmation - Gulf Connect Consultancy',
         html: `
@@ -66,9 +80,9 @@ export class MailService {
       });
 
       // 📩 2. Notification Email to the ADMIN
-      const adminMailPromise = this.transporter.sendMail({
-        from: `"GCC System Alert" <${env.SMTP_USER}>`,
-        to: env.CONTACT_NOTIFICATION_EMAIL || env.SMTP_USER,
+      const adminMailPromise = transporter.sendMail({
+        from: `"GCC System Alert" <${smtpUser}>`,
+        to: adminEmail,
         subject: `🔔 New Meeting Request: ${data.name} (${data.company})`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6;">
