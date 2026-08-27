@@ -241,7 +241,7 @@ function MeetingCard({
                 : '1px solid rgba(200, 121, 121, 0.25)',
           }}
         >
-          {item.status === 'PENDING' ? '⏳ PENDING CONFIRMATION' : item.status === 'REVIEWED' ? '✓ CONFIRMED' : item.status}
+          {item.status === 'PENDING' ? 'PENDING CONFIRMATION' : item.status === 'REVIEWED' ? 'CONFIRMED' : item.status}
         </span>
       </div>
 

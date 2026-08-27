@@ -3,6 +3,8 @@ import { adminRepository, AdminRepository } from '@/repositories/admin.repositor
 import { MailService, mailService } from './mail.service';
 import { ContactEnquiry, CreateContactDto, EnquiryStatus } from '@/models/contact.model';
 import { NotFoundError } from '@/utils/errors';
+import { investorService } from './investor.service';
+import { companyService } from './company.service';
 
 export class ContactService {
   constructor(
@@ -12,25 +14,33 @@ export class ContactService {
   ) {}
 
   async submitEnquiry(data: CreateContactDto): Promise<{ enquiry: ContactEnquiry; trackingId: string; meetingLink: string }> {
-    const enquiry = await this.repository.create(data);
-    const meetingLink = `https://meet.jit.si/GCC-Consultation-${enquiry.id}`;
+    if (data.formType === 'investor' || data.area === 'investor-relations' || data.area === 'investor-outreach') {
+      return investorService.submitEnquiry({
+        name: data.name,
+        company: data.company,
+        email: data.email,
+        phone: data.phone,
+        market: data.market,
+        area: data.area || 'investor-relations',
+        message: data.message,
+        preferredDate: data.preferredDate,
+        preferredTime: data.preferredTime,
+        formType: 'investor',
+      });
+    }
 
-    await this.mailer.sendMeetingEmails({
-      name: enquiry.name,
-      email: enquiry.email,
-      company: enquiry.company,
-      preferredDate: enquiry.preferredDate,
-      preferredTime: enquiry.preferredTime,
-      enquiryId: enquiry.id,
-      area: enquiry.area,
-      message: enquiry.message,
+    return companyService.submitEnquiry({
+      name: data.name,
+      company: data.company,
+      email: data.email,
+      phone: data.phone,
+      market: data.market,
+      area: data.area || 'general',
+      message: data.message,
+      preferredDate: data.preferredDate,
+      preferredTime: data.preferredTime,
+      formType: 'company',
     });
-
-    return {
-      enquiry,
-      trackingId: enquiry.id,
-      meetingLink,
-    };
   }
 
   async getAllEnquiries(): Promise<ContactEnquiry[]> {

@@ -18,6 +18,30 @@ function DashboardIcon({ color }: { color: string }) {
   );
 }
 
+function InvestorIcon({ color }: { color: string }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="1" x2="12" y2="23" />
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
+  );
+}
+
+function CompanyIcon({ color }: { color: string }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 21h18" />
+      <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" />
+      <path d="M9 9h1" />
+      <path d="M9 13h1" />
+      <path d="M9 17h1" />
+      <path d="M14 9h1" />
+      <path d="M14 13h1" />
+      <path d="M14 17h1" />
+    </svg>
+  );
+}
+
 function InboxIcon({ color }: { color: string }) {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -186,7 +210,7 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
           </div>
 
           {/* Primary Navigation Items */}
-          <nav style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <nav style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '6px' }}>
             <SidebarNavItem
               href="/admin/dashboard"
               active={pathname === '/admin/dashboard'}
@@ -194,13 +218,23 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
               icon={(color) => <DashboardIcon color={color} />}
               onClick={onMobileClose}
             />
+
             <SidebarNavItem
-              href="/admin/enquiries"
-              active={pathname === '/admin/enquiries'}
-              label="Contact Enquiries"
-              icon={(color) => <InboxIcon color={color} />}
+              href="/admin/enquiries/investor"
+              active={pathname === '/admin/enquiries/investor'}
+              label="Investor Enquiries"
+              icon={(color) => <InvestorIcon color={color} />}
               onClick={onMobileClose}
             />
+
+            <SidebarNavItem
+              href="/admin/enquiries/company"
+              active={pathname === '/admin/enquiries/company'}
+              label="Company Enquiries"
+              icon={(color) => <CompanyIcon color={color} />}
+              onClick={onMobileClose}
+            />
+
             <SidebarNavItem
               href="/admin/meetings"
               active={pathname.startsWith('/admin/meetings')}
@@ -208,6 +242,7 @@ export function AdminSidebar({ mobileOpen, onMobileClose }: AdminSidebarProps) {
               icon={(color) => <VideoIcon color={color} />}
               onClick={onMobileClose}
             />
+
             {role === 'SUPER_ADMIN' && (
               <SidebarNavItem
                 href="/admin/users"
