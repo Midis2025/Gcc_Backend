@@ -109,10 +109,17 @@ export class MailService {
       });
 
       // Execute both emails simultaneously
-      await Promise.all([userMailPromise, adminMailPromise]);
-      console.log(`[MailService] Both User and Admin emails sent successfully via Nodemailer for enquiry ${data.enquiryId}`);
+      const results = await Promise.allSettled([userMailPromise, adminMailPromise]);
+      results.forEach((res, i) => {
+        if (res.status === 'rejected') {
+          console.error(`[MailService] Email ${i === 0 ? 'User' : 'Admin'} failed:`, res.reason);
+        } else {
+          console.log(`[MailService] Email ${i === 0 ? 'User' : 'Admin'} sent successfully:`, res.value.messageId);
+        }
+      });
     } catch (error) {
       console.error('[MailService] Failed to send Nodemailer emails:', error);
+      throw error;
     }
   }
 }
