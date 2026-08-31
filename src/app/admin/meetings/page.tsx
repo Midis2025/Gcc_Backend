@@ -211,63 +211,10 @@ function MeetingCard({
       {/* Subtle Divider */}
       <hr style={{ borderColor: '#263541', margin: '4px 0 2px 0', borderTopWidth: '1px' }} />
 
-      {/* Status Badge */}
-      <div>
-        <span
-          style={{
-            display: 'inline-block',
-            padding: '4px 10px',
-            borderRadius: 'var(--radius-sm)',
-            fontSize: '0.72rem',
-            fontWeight: 700,
-            letterSpacing: '0.02em',
-            backgroundColor:
-              item.status === 'PENDING'
-                ? 'rgba(198, 161, 91, 0.12)'
-                : item.status === 'REVIEWED'
-                ? 'rgba(127, 198, 154, 0.12)'
-                : 'rgba(200, 121, 121, 0.12)',
-            color:
-              item.status === 'PENDING'
-                ? '#C6A15B'
-                : item.status === 'REVIEWED'
-                ? '#7FC69A'
-                : '#C87979',
-            border:
-              item.status === 'PENDING'
-                ? '1px solid rgba(198, 161, 91, 0.25)'
-                : item.status === 'REVIEWED'
-                ? '1px solid rgba(127, 198, 154, 0.25)'
-                : '1px solid rgba(200, 121, 121, 0.25)',
-          }}
-        >
-          {item.status === 'PENDING' ? 'PENDING CONFIRMATION' : item.status === 'REVIEWED' ? 'CONFIRMED' : item.status}
-        </span>
-      </div>
+
 
       {/* Action Controls Row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-        {/* Status Dropdown */}
-        <select
-          value={item.status}
-          onChange={(e) => onStatusChange(item.id, e.target.value as EnquiryStatus)}
-          style={{
-            background: '#101821',
-            border: '1px solid #263541',
-            color: item.status === 'PENDING' ? '#C6A15B' : item.status === 'REVIEWED' ? '#7FC69A' : '#788692',
-            padding: '6px 10px',
-            borderRadius: '4px',
-            fontSize: '0.75rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            outline: 'none',
-          }}
-        >
-          <option value="PENDING">PENDING</option>
-          <option value="REVIEWED">REVIEWED</option>
-          <option value="ARCHIVED">ARCHIVED</option>
-        </select>
-
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <button
             onClick={() => onSelect(item)}
@@ -289,7 +236,7 @@ function MeetingCard({
           </button>
 
           <a
-            href={`https://meet.jit.si/GCC-Consultation-${item.id}`}
+            href={`/meeting/${item.id}`}
             target="_blank"
             rel="noreferrer"
             onMouseEnter={() => setBtnHover(true)}
@@ -401,16 +348,7 @@ export default function AdminMeetingsPage() {
           style={{ flex: 1, minWidth: '240px', padding: '10px 14px', background: '#101821', border: '1px solid #263541', color: '#F4F1E9', borderRadius: 'var(--radius-sm)', fontSize: 'var(--text-sm)' }}
         />
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ padding: '10px 14px', background: '#101821', border: '1px solid #263541', color: '#F4F1E9', borderRadius: 'var(--radius-sm)', fontSize: 'var(--text-sm)', cursor: 'pointer' }}
-        >
-          <option value="">All Statuses</option>
-          <option value="PENDING">Pending Confirmation</option>
-          <option value="REVIEWED">Confirmed</option>
-          <option value="ARCHIVED">Archived</option>
-        </select>
+
       </div>
 
       {/* Scheduled Meetings Grid with Natural Spacing */}
@@ -447,7 +385,7 @@ export default function AdminMeetingsPage() {
               <div><strong style={{ color: '#788692' }}>Target Market:</strong> <span style={{ color: '#F4F1E9' }}>{selectedEnquiry.market || 'N/A'}</span></div>
               <div>
                 <strong style={{ color: '#788692' }}>Live Video Room:</strong>{' '}
-                <a href={`https://meet.jit.si/GCC-Consultation-${selectedEnquiry.id}`} target="_blank" rel="noreferrer" style={{ color: '#C6A15B', fontWeight: 700 }}>
+                <a href={`/meeting/${selectedEnquiry.id}`} target="_blank" rel="noreferrer" style={{ color: '#C6A15B', fontWeight: 700 }}>
                   Launch Video Room ➔
                 </a>
               </div>
