@@ -14,14 +14,16 @@ export class InvestorService {
     const meetingLink = `https://meet.jit.si/GCC-Consultation-${enquiry.id}`;
 
     // Send meeting email confirmation to both user and admin
-    await this.mailer.sendMeetingEmails({
+    await this.mailer.sendInvestorEmails({
       name: enquiry.name,
       email: enquiry.email,
       company: enquiry.company,
+      phone: enquiry.phone,
+      market: enquiry.market,
       preferredDate: enquiry.preferredDate,
       preferredTime: enquiry.preferredTime,
       enquiryId: enquiry.id,
-      area: `[Investor Form] ${enquiry.area}`,
+      area: enquiry.area,
       message: enquiry.message,
     });
 

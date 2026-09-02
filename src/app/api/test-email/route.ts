@@ -1,60 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
-import { env } from '@/config/env';
+import {
+  generateInvestorAdminEmail,
+  generateCompanyConfirmationEmail,
+  generateCompanyAdminEmail,
+} from '@/templates/email-templates';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  const targetEmail = searchParams.get('to') || process.env.SMTP_USER || env.SMTP_USER;
+  const template = searchParams.get('template') || 'company';
+  const format = searchParams.get('format');
 
-  const smtpUser = (process.env.SMTP_USER || env.SMTP_USER || '').trim().replace(/^["']|["']$/g, '');
-  const smtpPass = (process.env.SMTP_PASS || env.SMTP_PASS || '').trim().replace(/\s+/g, '').replace(/^["']|["']$/g, '');
-  const smtpHost = process.env.SMTP_HOST || env.SMTP_HOST || 'smtp.gmail.com';
-  const smtpPort = parseInt(process.env.SMTP_PORT || String(env.SMTP_PORT || 587), 10);
-  const smtpSecure = process.env.SMTP_SECURE === 'true';
+  const sampleData = {
+    name: searchParams.get('name') || 'Jane Doe',
+    email: searchParams.get('email') || 'jane.doe@example.com',
+    company: searchParams.get('company') || 'Apex Capital Partners',
+    phone: '+971 50 123 4567',
+    market: 'ae',
+    jobTitle: 'Managing Partner',
+    investorType: 'Venture Capital & Private Equity',
+    area: 'Regional Expansion & Capital Markets',
+    message: 'Seeking investor relations and strategic positioning support across GCC markets.',
+  };
 
-  if (!smtpUser || !smtpPass) {
-    return NextResponse.json({
-      success: false,
-      error: 'SMTP credentials missing',
-      details: { smtpUser: Boolean(smtpUser), smtpPass: Boolean(smtpPass) },
-    }, { status: 400 });
+  const calendlyLink = `https://calendly.com/gulfconnectconsultancy-info/30min?name=${encodeURIComponent(sampleData.name)}&email=${encodeURIComponent(sampleData.email)}`;
+
+  let htmlContent = '';
+  if (template === 'investor-admin' || template === 'investor') {
+    htmlContent = generateInvestorAdminEmail(sampleData);
+  } else if (template === 'company-admin') {
+    htmlContent = generateCompanyAdminEmail(sampleData);
+  } else {
+    htmlContent = generateCompanyConfirmationEmail(sampleData, calendlyLink);
   }
 
-  const transporter = nodemailer.createTransport({
-    host: smtpHost,
-    port: smtpPort,
-    secure: smtpSecure,
-    auth: { user: smtpUser, pass: smtpPass },
-    connectionTimeout: 15000,
-    greetingTimeout: 15000,
-    socketTimeout: 15000,
+  if (format === 'raw') {
+    return new NextResponse(htmlContent, {
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    });
+  }
+
+  return new NextResponse(htmlContent, {
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
   });
-
-  try {
-    const verifyResult = await transporter.verify();
-    console.log('[TestEmail] SMTP Verify:', verifyResult);
-
-    const sendResult = await transporter.sendMail({
-      from: `"GCC Diagnostic Test" <${smtpUser}>`,
-      to: targetEmail,
-      subject: 'Vercel SMTP Test Email',
-      text: 'This is a test email sent from Vercel serverless function to diagnose SMTP delivery.',
-    });
-
-    return NextResponse.json({
-      success: true,
-      verifyResult,
-      sendResult,
-      config: { smtpHost, smtpPort, smtpSecure, smtpUserMasked: `${smtpUser.substring(0, 4)}***` },
-    });
-  } catch (error) {
-    console.error('[TestEmail Error]:', error);
-    return NextResponse.json({
-      success: false,
-      errorName: error instanceof Error ? error.name : 'UnknownError',
-      errorMessage: error instanceof Error ? error.message : String(error),
-      errorStack: error instanceof Error ? error.stack : undefined,
-      config: { smtpHost, smtpPort, smtpSecure, smtpUserMasked: `${smtpUser.substring(0, 4)}***` },
-    }, { status: 500 });
-  }
 }
+

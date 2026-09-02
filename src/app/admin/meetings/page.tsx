@@ -86,8 +86,8 @@ function MeetingCard({
   const [btnHover, setBtnHover] = useState(false);
   const [viewHover, setViewHover] = useState(false);
 
-  const formattedDate = item.preferredDate ? item.preferredDate.toUpperCase() : 'DATE NOT SPECIFIED';
-  const formattedTime = item.preferredTime ? item.preferredTime.toUpperCase() : 'FLEXIBLE TIME';
+  const formattedDate = item.preferredDate ? item.preferredDate.toUpperCase() : 'PENDING CALENDLY SCHEDULE';
+  const formattedTime = item.preferredTime ? item.preferredTime.toUpperCase() : 'TIME TBD VIA CALENDLY';
   const initials = getInitials(item.name);
 
   // Status Rail Color
@@ -95,8 +95,10 @@ function MeetingCard({
     item.status === 'PENDING'
       ? '#C6A15B'
       : item.status === 'REVIEWED'
-      ? '#7FC69A'
-      : '#C87979';
+        ? '#7FC69A'
+        : '#C87979';
+
+  const meetingUrl = item.meetingLink || 'https://calendly.com/app/scheduled_events/user/me';
 
   return (
     <div
@@ -153,7 +155,7 @@ function MeetingCard({
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <CalendarIcon color="#C6A15B" />
-          <span style={{ color: '#C6A15B', fontWeight: 700, fontSize: '1rem', letterSpacing: '-0.01em' }}>
+          <span style={{ color: item.preferredDate ? '#7FC69A' : '#C6A15B', fontWeight: 700, fontSize: '0.92rem', letterSpacing: '-0.01em' }}>
             {formattedDate}
           </span>
         </div>
@@ -211,8 +213,6 @@ function MeetingCard({
       {/* Subtle Divider */}
       <hr style={{ borderColor: '#263541', margin: '4px 0 2px 0', borderTopWidth: '1px' }} />
 
-
-
       {/* Action Controls Row */}
       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -236,7 +236,7 @@ function MeetingCard({
           </button>
 
           <a
-            href={`/meeting/${item.id}`}
+            href={meetingUrl}
             target="_blank"
             rel="noreferrer"
             onMouseEnter={() => setBtnHover(true)}
@@ -380,13 +380,13 @@ export default function AdminMeetingsPage() {
               <div><strong style={{ color: '#788692' }}>Company:</strong> <span style={{ color: '#F4F1E9' }}>{selectedEnquiry.company}</span></div>
               <div><strong style={{ color: '#788692' }}>Work Email:</strong> <span style={{ color: '#F4F1E9' }}>{selectedEnquiry.email}</span></div>
               <div><strong style={{ color: '#788692' }}>Phone:</strong> <span style={{ color: '#F4F1E9' }}>{selectedEnquiry.phone || 'N/A'}</span></div>
-              <div><strong style={{ color: '#788692' }}>Requested Date & Time:</strong> <span style={{ color: '#C6A15B', fontWeight: 700 }}>{selectedEnquiry.preferredDate ? `${selectedEnquiry.preferredDate} ${selectedEnquiry.preferredTime || ''}` : 'N/A'}</span></div>
+              <div><strong style={{ color: '#788692' }}>Requested Date & Time:</strong> <span style={{ color: '#C6A15B', fontWeight: 700 }}>{selectedEnquiry.preferredDate ? `${selectedEnquiry.preferredDate} ${selectedEnquiry.preferredTime || ''}` : 'Pending Calendly Selection'}</span></div>
               <div><strong style={{ color: '#788692' }}>Area of Interest:</strong> <span style={{ color: '#F4F1E9' }}>{selectedEnquiry.area}</span></div>
               <div><strong style={{ color: '#788692' }}>Target Market:</strong> <span style={{ color: '#F4F1E9' }}>{selectedEnquiry.market || 'N/A'}</span></div>
               <div>
-                <strong style={{ color: '#788692' }}>Live Video Room:</strong>{' '}
-                <a href={`/meeting/${selectedEnquiry.id}`} target="_blank" rel="noreferrer" style={{ color: '#C6A15B', fontWeight: 700 }}>
-                  Launch Video Room ➔
+                <strong style={{ color: '#788692' }}>Meeting Invite Link:</strong>{' '}
+                <a href={selectedEnquiry.meetingLink || 'https://calendly.com/app/scheduled_events/user/me'} target="_blank" rel="noreferrer" style={{ color: '#C6A15B', fontWeight: 700 }}>
+                  View on Calendly / Zoom ➔
                 </a>
               </div>
               <hr style={{ borderColor: '#263541', margin: '10px 0' }} />
