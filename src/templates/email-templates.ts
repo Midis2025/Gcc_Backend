@@ -60,12 +60,12 @@ const LEGAL =
 
 const COPYRIGHT = `&copy; ${new Date().getFullYear()} Gulf Connect. All rights reserved.`;
 
-const P = `margin:0 0 22px 0;color:${INK};font-family:${FONT};font-size:18px;font-weight:400;line-height:1.35;`;
-const P_TIGHT = `margin:0 0 4px 0;color:${INK};font-family:${FONT};font-size:18px;font-weight:400;line-height:1.35;`;
-const P_LAST = `margin:0;color:${INK};font-family:${FONT};font-size:18px;font-weight:400;line-height:1.35;`;
-const H1 = `margin:0 0 28px 0;color:${GOLD};font-family:${FONT};font-size:29px;font-weight:700;line-height:1.2;letter-spacing:-0.2px;`;
-const H2 = `margin:0 0 18px 0;color:${GOLD};font-family:${FONT};font-size:19px;font-weight:700;line-height:1.25;`;
-const STRONG = `color:${INK};font-weight:700;`;
+const P = `margin:0 0 22px 0;color:${INK} !important;font-family:${FONT};font-size:18px;font-weight:400;line-height:1.35;`;
+const P_TIGHT = `margin:0 0 4px 0;color:${INK} !important;font-family:${FONT};font-size:18px;font-weight:400;line-height:1.35;`;
+const P_LAST = `margin:0;color:${INK} !important;font-family:${FONT};font-size:18px;font-weight:400;line-height:1.35;`;
+const H1 = `margin:0 0 28px 0;color:${GOLD} !important;font-family:${FONT};font-size:29px;font-weight:700;line-height:1.2;letter-spacing:-0.2px;`;
+const H2 = `margin:0 0 18px 0;color:${GOLD} !important;font-family:${FONT};font-size:19px;font-weight:700;line-height:1.25;`;
+const STRONG = `color:${INK} !important;font-weight:700;`;
 
 /* -------------------------------------------------------------------------- */
 /* Helpers                                                                     */
@@ -190,16 +190,16 @@ function header(): string {
 function footer(full: boolean): string {
   const legalBlock = full
     ? `${spacer(18)}${hairline()}${spacer(18)}
-              <p style="margin:0;color:${INK};font-family:${FONT};font-size:12px;line-height:1.55;">${LEGAL}</p>`
+              <p style="margin:0;color:${INK} !important;font-family:${FONT};font-size:12px;line-height:1.55;">${LEGAL}</p>`
     : '';
 
   return `<tr>
-            <td style="padding:26px ${GUTTER}px 28px ${GUTTER}px;background-color:${PAGE};">
+            <td bgcolor="${PAGE}" style="padding:26px ${GUTTER}px 28px ${GUTTER}px;background-color:${PAGE};color:${INK} !important;">
               ${logoBlock(150)}
-              <p style="margin:16px 0 0 0;color:${INK};font-family:${FONT};font-size:12px;line-height:1.45;">${TAGLINE}</p>
+              <p style="margin:16px 0 0 0;color:${INK} !important;font-family:${FONT};font-size:12px;line-height:1.45;">${TAGLINE}</p>
               ${legalBlock}
               ${spacer(18)}${hairline()}${spacer(18)}
-              <p style="margin:0;color:${INK};font-family:${FONT};font-size:14px;font-weight:700;line-height:1.4;">${COPYRIGHT}</p>
+              <p style="margin:0;color:${INK} !important;font-family:${FONT};font-size:14px;font-weight:700;line-height:1.4;">${COPYRIGHT}</p>
             </td>
           </tr>`;
 }
@@ -213,18 +213,53 @@ function layout(options: { title: string; preheader: string; body: string; fullF
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="x-apple-disable-message-reformatting">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
   <title>${escapeHtml(options.title)}</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      supported-color-schemes: light dark;
+    }
+    /* Force mobile dark mode (Gmail, Apple Mail, Outlook) to preserve high contrast */
+    @media (prefers-color-scheme: dark) {
+      body, table, td {
+        background-color: ${PAGE} !important;
+        color: ${INK} !important;
+      }
+      p, span, td, div {
+        color: ${INK} !important;
+      }
+      h1, h2 {
+        color: ${GOLD} !important;
+      }
+      a {
+        color: ${GOLD} !important;
+      }
+    }
+    /* Outlook.com / Office 365 dark mode overrides */
+    [data-ogsc] body, [data-ogsc] table, [data-ogsc] td {
+      background-color: ${PAGE} !important;
+      color: ${INK} !important;
+    }
+    [data-ogsc] p, [data-ogsc] span, [data-ogsc] td, [data-ogsc] div {
+      color: ${INK} !important;
+    }
+    [data-ogsc] h1, [data-ogsc] h2 {
+      color: ${GOLD} !important;
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;background-color:${PAGE};color:${INK};font-family:${FONT};-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;">
+<body style="margin:0;padding:0;background-color:${PAGE};color:${INK} !important;font-family:${FONT};-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;mso-hide:all;">${escapeHtml(options.preheader)}</div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${PAGE};border-collapse:collapse;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${PAGE}" style="background-color:${PAGE};border-collapse:collapse;">
     <tr>
-      <td align="center" style="padding:0;">
-        <table role="presentation" width="${WIDTH}" cellpadding="0" cellspacing="0" border="0" style="width:${WIDTH}px;max-width:100%;border-collapse:collapse;background-color:${SURFACE};background-image:radial-gradient(120% 78% at 78% 26%,#17212d 0%,#0c131b 46%,${PAGE} 100%);">
+      <td align="center" bgcolor="${PAGE}" style="padding:0;background-color:${PAGE};color:${INK} !important;">
+        <table role="presentation" width="${WIDTH}" cellpadding="0" cellspacing="0" border="0" bgcolor="${SURFACE}" style="width:${WIDTH}px;max-width:100%;border-collapse:collapse;background-color:${SURFACE};background-image:radial-gradient(120% 78% at 78% 26%,#17212d 0%,#0c131b 46%,${PAGE} 100%);">
           ${header()}
           <tr>
-            <td style="padding:38px ${GUTTER}px 34px ${GUTTER}px;">
+            <td bgcolor="${SURFACE}" style="padding:38px ${GUTTER}px 34px ${GUTTER}px;color:${INK} !important;">
               ${options.body}
             </td>
           </tr>
@@ -244,8 +279,8 @@ function detailRow(label: string, valueHtml: string): string {
                   <td style="padding:0;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;border-collapse:collapse;border:1px solid ${RULE};">
                       <tr>
-                        <td width="36%" style="width:36%;padding:12px 16px;background-color:${CELL_LABEL};border-right:1px solid ${RULE};color:${INK};font-family:${FONT};font-size:17px;font-weight:700;line-height:1.3;">${label}</td>
-                        <td style="padding:12px 16px;background-color:${CELL_VALUE};color:${INK};font-family:${FONT};font-size:17px;font-weight:400;line-height:1.3;word-break:break-word;">${valueHtml}</td>
+                        <td width="36%" bgcolor="${CELL_LABEL}" style="width:36%;padding:12px 16px;background-color:${CELL_LABEL};border-right:1px solid ${RULE};color:${INK} !important;font-family:${FONT};font-size:17px;font-weight:700;line-height:1.3;">${label}</td>
+                        <td bgcolor="${CELL_VALUE}" style="padding:12px 16px;background-color:${CELL_VALUE};color:${INK} !important;font-family:${FONT};font-size:17px;font-weight:400;line-height:1.3;word-break:break-word;">${valueHtml}</td>
                       </tr>
                     </table>
                   </td>
