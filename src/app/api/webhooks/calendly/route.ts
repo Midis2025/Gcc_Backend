@@ -98,7 +98,11 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const targetUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.EMAIL_ASSET_BASE_URL || 'https://gcc-backend-two.vercel.app';
+  const targetUrl =
+    process.env.FRONTEND_URL ||
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    'https://www.gulfconnectconsultancy.com';
+
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('invitee_email') || searchParams.get('email');
