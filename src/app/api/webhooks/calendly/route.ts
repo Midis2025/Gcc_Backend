@@ -98,6 +98,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const targetUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.EMAIL_ASSET_BASE_URL || 'https://gcc-backend-two.vercel.app';
   try {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get('invitee_email') || searchParams.get('email');
@@ -109,8 +110,9 @@ export async function GET(req: NextRequest) {
       await updateEnquiryByEmail(email, date, time, joinUrl || undefined);
     }
 
-    return NextResponse.json({ success: true, message: 'Calendly meeting details processed' });
+    return NextResponse.redirect(targetUrl);
   } catch (err) {
-    return NextResponse.json({ success: false, error: err instanceof Error ? err.message : 'Failed to process request' }, { status: 500 });
+    console.error('[Calendly GET Redirect Error]:', err);
+    return NextResponse.redirect(targetUrl);
   }
 }
