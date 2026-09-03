@@ -1,0 +1,307 @@
+/* ---------------------------------------------------------------------------
+   Gulf Connect Consultancy — e-mail design system
+   Extracted from:
+     - GCC Mail Template Company Registration — Confirmation Email.pdf
+     - GCC Mail Template Investor Registration — Admin.pdf
+
+   This stylesheet is the design source of truth and drives the two preview
+   documents in this folder. The production templates in
+   src/templates/email-templates.ts carry the same values inlined, because most
+   mail clients (Outlook, Gmail web, Yahoo) drop <style> blocks and external
+   stylesheets entirely.
+--------------------------------------------------------------------------- */
+
+:root {
+  /* Palette sampled from the PDFs */
+  --gcc-gold: #b8945f;
+  --gcc-gold-dim: #7a6340;
+  --gcc-page: #080d13;
+  --gcc-surface: #0a0f16;
+  --gcc-cell-label: #0a1119;
+  --gcc-cell-value: #0b121a;
+  --gcc-text: #ffffff;
+  --gcc-rule: rgba(255, 255, 255, 0.22);
+  --gcc-rule-soft: rgba(255, 255, 255, 0.07);
+
+  --gcc-font: "Helvetica Neue", Helvetica, Arial, "Segoe UI", sans-serif;
+
+  /* 640px container = the 680pt PDF artboard scaled by 0.94 */
+  --gcc-width: 640px;
+  --gcc-gutter: 30px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--gcc-page);
+  color: var(--gcc-text);
+  font-family: var(--gcc-font);
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+table {
+  border-collapse: collapse;
+  mso-table-lspace: 0;
+  mso-table-rspace: 0;
+}
+
+img {
+  border: 0;
+  outline: none;
+  display: block;
+  -ms-interpolation-mode: bicubic;
+}
+
+a {
+  color: var(--gcc-gold);
+}
+
+/* --- shell ---------------------------------------------------------------- */
+
+.gcc-page {
+  width: 100%;
+  background-color: var(--gcc-page);
+}
+
+.gcc-card {
+  width: var(--gcc-width);
+  max-width: 100%;
+  background-color: var(--gcc-surface);
+  /* Soft glow sitting behind the artwork in the PDF hero. */
+  background-image: radial-gradient(120% 78% at 78% 26%, #17212d 0%, #0c131b 46%, #080d13 100%);
+}
+
+/* --- header --------------------------------------------------------------- */
+
+.gcc-header {
+  padding: 20px var(--gcc-gutter);
+  border-bottom: 1px solid var(--gcc-rule-soft);
+}
+
+.gcc-logo {
+  width: 180px;
+  height: auto;
+}
+
+.gcc-logo--footer {
+  width: 150px;
+}
+
+/* Text fallback used when no hosted logo URL is configured. */
+.gcc-wordmark {
+  font-family: var(--gcc-font);
+  line-height: 1.15;
+}
+
+.gcc-wordmark__top {
+  display: block;
+  color: var(--gcc-gold);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 2.6px;
+}
+
+.gcc-wordmark__bottom {
+  display: block;
+  color: var(--gcc-text);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+}
+
+/* --- body ----------------------------------------------------------------- */
+
+.gcc-body {
+  padding: 38px var(--gcc-gutter) 34px;
+}
+
+.gcc-h1 {
+  margin: 0 0 28px;
+  color: var(--gcc-gold);
+  font-size: 29px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.2px;
+}
+
+.gcc-h2 {
+  margin: 0 0 18px;
+  color: var(--gcc-gold);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.gcc-p {
+  margin: 0 0 22px;
+  color: var(--gcc-text);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.gcc-p--tight {
+  margin: 0 0 4px;
+}
+
+.gcc-p--last {
+  margin: 0;
+}
+
+.gcc-strong {
+  color: var(--gcc-text);
+  font-weight: 700;
+}
+
+/* --- call to action ------------------------------------------------------- */
+
+.gcc-cta {
+  margin: 30px 0 32px;
+}
+
+.gcc-cta__button {
+  display: inline-block;
+  padding: 13px 22px;
+  background-color: var(--gcc-gold);
+  color: #090e14;
+  font-family: var(--gcc-font);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  /* The PDF button has square corners. */
+  border-radius: 0;
+}
+
+/* --- detail rows (investor admin) ----------------------------------------- */
+
+.gcc-rows {
+  width: 100%;
+  margin: 0 0 24px;
+}
+
+.gcc-row {
+  width: 100%;
+  border: 1px solid var(--gcc-rule);
+}
+
+.gcc-row__spacer {
+  height: 8px;
+  line-height: 8px;
+  font-size: 0;
+}
+
+.gcc-row__label {
+  width: 36%;
+  padding: 12px 16px;
+  background-color: var(--gcc-cell-label);
+  border-right: 1px solid var(--gcc-rule);
+  color: var(--gcc-text);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.gcc-row__value {
+  padding: 12px 16px;
+  background-color: var(--gcc-cell-value);
+  color: var(--gcc-text);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+.gcc-row__value a {
+  color: var(--gcc-gold);
+  text-decoration: none;
+}
+
+/* --- rules ---------------------------------------------------------------- */
+
+.gcc-divider {
+  height: 1px;
+  font-size: 0;
+  line-height: 1px;
+  background-color: var(--gcc-gold-dim);
+  background-image: linear-gradient(
+    90deg,
+    rgba(184, 148, 95, 0) 0%,
+    var(--gcc-gold) 26%,
+    var(--gcc-gold) 58%,
+    rgba(184, 148, 95, 0.04) 100%
+  );
+}
+
+.gcc-hairline {
+  height: 1px;
+  font-size: 0;
+  line-height: 1px;
+  background-color: var(--gcc-rule-soft);
+}
+
+/* --- footer --------------------------------------------------------------- */
+
+.gcc-footer {
+  padding: 26px var(--gcc-gutter) 28px;
+  background-color: var(--gcc-page);
+}
+
+.gcc-footer__tagline {
+  margin: 16px 0 0;
+  color: var(--gcc-text);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.gcc-footer__legal {
+  margin: 0;
+  color: var(--gcc-text);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.gcc-footer__copyright {
+  margin: 0;
+  color: var(--gcc-text);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.gcc-footer__pad {
+  height: 18px;
+  font-size: 0;
+  line-height: 18px;
+}
+
+/* --- small screens -------------------------------------------------------- */
+
+@media only screen and (max-width: 620px) {
+  .gcc-body,
+  .gcc-footer {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .gcc-header {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .gcc-h1 {
+    font-size: 25px !important;
+  }
+
+  .gcc-p,
+  .gcc-row__label,
+  .gcc-row__value {
+    font-size: 16px !important;
+  }
+
+  .gcc-row__label {
+    width: 42% !important;
+  }
+}

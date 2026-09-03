@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>New Investor Registration</title>
+  <link rel="stylesheet" href="email.css">
+</head>
+<body>
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
+    A new investor registration has been submitted through the Gulf Connect website.
+  </div>
+
+  <table role="presentation" class="gcc-page" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+      <td align="center">
+        <table role="presentation" class="gcc-card" cellpadding="0" cellspacing="0" border="0">
+
+          <!-- HEADER -->
+          <tr>
+            <td class="gcc-header">
+              <img class="gcc-logo" src="assets/gcc-logo.png" width="180" alt="Gulf Connect Consultancy">
+            </td>
+          </tr>
+
+          <!-- BODY -->
+          <tr>
+            <td class="gcc-body">
+              <h1 class="gcc-h1">New Investor Registration</h1>
+
+              <p class="gcc-p">
+                A new investor registration has been submitted through the Gulf Connect website.
+              </p>
+
+              <h2 class="gcc-h2">Investor Details</h2>
+
+              <table role="presentation" class="gcc-rows" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td>
+                    <table role="presentation" class="gcc-row" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="gcc-row__label">Name:</td>
+                        <td class="gcc-row__value">{{name}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr><td class="gcc-row__spacer">&nbsp;</td></tr>
+
+                <tr>
+                  <td>
+                    <table role="presentation" class="gcc-row" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="gcc-row__label">Email:</td>
+                        <td class="gcc-row__value"><a href="mailto:{{email}}">{{email}}</a></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr><td class="gcc-row__spacer">&nbsp;</td></tr>
+
+                <tr>
+                  <td>
+                    <table role="presentation" class="gcc-row" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="gcc-row__label">Phone:</td>
+                        <td class="gcc-row__value">{{phone}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr><td class="gcc-row__spacer">&nbsp;</td></tr>
+
+                <tr>
+                  <td>
+                    <table role="presentation" class="gcc-row" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="gcc-row__label">Company/Fund:</td>
+                        <td class="gcc-row__value">{{company}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr><td class="gcc-row__spacer">&nbsp;</td></tr>
+
+                <tr>
+                  <td>
+                    <table role="presentation" class="gcc-row" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="gcc-row__label">Job Title:</td>
+                        <td class="gcc-row__value">{{jobTitle}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr><td class="gcc-row__spacer">&nbsp;</td></tr>
+
+                <tr>
+                  <td>
+                    <table role="presentation" class="gcc-row" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="gcc-row__label">Location:</td>
+                        <td class="gcc-row__value">{{location}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr><td class="gcc-row__spacer">&nbsp;</td></tr>
+
+                <tr>
+                  <td>
+                    <table role="presentation" class="gcc-row" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="gcc-row__label">Investor Type:</td>
+                        <td class="gcc-row__value">{{investorType}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr><td class="gcc-row__spacer">&nbsp;</td></tr>
+
+                <tr>
+                  <td>
+                    <table role="presentation" class="gcc-row" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td class="gcc-row__label">Investment Interests:</td>
+                        <td class="gcc-row__value">{{investmentInterests}}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <p class="gcc-p gcc-p--last">
+                Please review the registration and follow up where appropriate.
+              </p>
+            </td>
+          </tr>
+
+          <!-- GOLD DIVIDER (the PDF artboard ends here) -->
+          <tr>
+            <td class="gcc-body" style="padding-top:0;padding-bottom:0;">
+              <div class="gcc-divider">&nbsp;</div>
+            </td>
+          </tr>
+
+          <!-- FOOTER -->
+          <tr>
+            <td class="gcc-footer">
+              <img class="gcc-logo gcc-logo--footer" src="assets/gcc-logo.png" width="150" alt="Gulf Connect Consultancy">
+
+              <p class="gcc-footer__tagline">
+                Investor communications, events and media services for Gulf capital markets.
+              </p>
+
+              <div class="gcc-footer__pad">&nbsp;</div>
+              <div class="gcc-hairline">&nbsp;</div>
+              <div class="gcc-footer__pad">&nbsp;</div>
+
+              <p class="gcc-footer__copyright">&copy; 2026 Gulf Connect. All rights reserved.</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

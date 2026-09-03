@@ -2,16 +2,26 @@ import { Resend } from 'resend';
 import { env } from '@/config/env';
 import {
   EmailData,
+  marketLabel,
   generateInvestorAdminEmail,
-  generateCompanyConfirmationEmail,
   generateCompanyAdminEmail,
+  generateCompanyConfirmationEmail,
+  generateInvestorConfirmationEmail,
+  generateConfirmationText,
+  generateAdminText,
 } from '@/templates/email-templates';
+
+type SendResult = { data: unknown; error: unknown };
 
 export class MailService {
   private resend = new Resend(process.env.RESEND_API_KEY);
 
   private getAdminEmail(): string {
-    return process.env.CONTACT_NOTIFICATION_EMAIL || env.CONTACT_NOTIFICATION_EMAIL || 'info@gulfconnectconsultancy.com';
+    return (
+      process.env.CONTACT_NOTIFICATION_EMAIL ||
+      env.CONTACT_NOTIFICATION_EMAIL ||
+      'info@gulfconnectconsultancy.com'
+    );
   }
 
   private getSenderEmail(): string {
@@ -19,104 +29,124 @@ export class MailService {
   }
 
   private getCalendlyLink(data: { name: string; email: string }): string {
-    const baseUrl = process.env.CALENDLY_URL || env.CALENDLY_URL || 'https://calendly.com/gulfconnectconsultancy-info/30min';
+    const baseUrl =
+      process.env.CALENDLY_URL ||
+      env.CALENDLY_URL ||
+      'https://calendly.com/gulfconnectconsultancy-info/30min';
     return `${baseUrl}?name=${encodeURIComponent(data.name)}&email=${encodeURIComponent(data.email)}`;
   }
 
+  private log(label: string, res: SendResult): void {
+    if (res.error) {
+      console.error(`[MailService] ${label} failed:`, res.error);
+    } else {
+      console.log(`[MailService] ${label} sent:`, res.data);
+    }
+  }
+
+  /** Rows shared by the admin HTML table and its plain-text alternative. */
+  private investorRows(data: EmailData): Array<[string, string]> {
+    return [
+      ['Name:', data.name || ''],
+      ['Email:', data.email || ''],
+      ['Phone:', data.phone || ''],
+      ['Company/Fund:', data.company || ''],
+      ['Job Title:', data.jobTitle || ''],
+      ['Location:', data.location || marketLabel(data.market)],
+      ['Investor Type:', data.investorType || data.area || ''],
+      ['Investment Interests:', data.investmentInterests || data.message || ''],
+    ];
+  }
+
+  private companyRows(data: EmailData): Array<[string, string]> {
+    return [
+      ['Name:', data.name || ''],
+      ['Email:', data.email || ''],
+      ['Phone:', data.phone || ''],
+      ['Company:', data.company || ''],
+      ['Market:', data.location || marketLabel(data.market)],
+      ['Area of Interest:', data.area || ''],
+      ['Message / Details:', data.message || ''],
+    ];
+  }
+
   /**
-   * Sends emails for Investor Registration (PDF Template 1 for Admin, PDF Template 2 for Investor)
+   * Investor registration: confirmation to the investor, alert to the desk.
+   * The admin mail follows 'GCC Mail Template Investor Registration — Admin.pdf'.
    */
   async sendInvestorEmails(data: EmailData): Promise<void> {
     const adminEmail = this.getAdminEmail();
     const senderEmail = this.getSenderEmail();
-    const calendlyLink = this.getCalendlyLink(data);
+    const meetingLink = this.getCalendlyLink(data);
 
     try {
-      console.log(`[MailService] Sending Investor Registration emails for: ${data.email}...`);
+      console.log(`[MailService] Sending investor registration emails for ${data.email}...`);
 
-      const userMailHtml = generateCompanyConfirmationEmail(data, calendlyLink);
-      const adminMailHtml = generateInvestorAdminEmail(data);
+      const [userRes, adminRes] = await Promise.all([
+        this.resend.emails.send({
+          from: `Gulf Connect Consultancy <${senderEmail}>`,
+          to: data.email,
+          subject: 'Thank You for Contacting Gulf Connect',
+          html: generateInvestorConfirmationEmail(data, meetingLink),
+          text: generateConfirmationText(data, meetingLink, true),
+        }),
+        this.resend.emails.send({
+          from: `Gulf Connect Alert <${senderEmail}>`,
+          to: adminEmail,
+          replyTo: data.email,
+          subject: `New Investor Registration: ${data.name}${data.company ? ` (${data.company})` : ''}`,
+          html: generateInvestorAdminEmail(data),
+          text: generateAdminText('New Investor Registration', this.investorRows(data)),
+        }),
+      ]);
 
-      const userMailPromise = this.resend.emails.send({
-        from: `Gulf Connect Consultancy <${senderEmail}>`,
-        to: data.email,
-        subject: 'Thank You for Contacting Gulf Connect',
-        html: userMailHtml,
-      });
-
-      const adminMailPromise = this.resend.emails.send({
-        from: `Gulf Connect Alert <${senderEmail}>`,
-        to: adminEmail,
-        subject: `New Investor Registration: ${data.name} (${data.company})`,
-        html: adminMailHtml,
-      });
-
-      const [userRes, adminRes] = await Promise.all([userMailPromise, adminMailPromise]);
-
-      if (userRes.error) {
-        console.error('[MailService] Resend Investor User Email Error:', userRes.error);
-      } else {
-        console.log('[MailService] Investor User email sent via Resend:', userRes.data);
-      }
-
-      if (adminRes.error) {
-        console.error('[MailService] Resend Investor Admin Email Error:', adminRes.error);
-      } else {
-        console.log('[MailService] Investor Admin email sent via Resend:', adminRes.data);
-      }
+      this.log('Investor confirmation', userRes as SendResult);
+      this.log('Investor admin alert', adminRes as SendResult);
     } catch (error) {
-      console.error('[MailService] Failed to send Investor emails:', error);
+      console.error('[MailService] Failed to send investor emails:', error);
     }
   }
 
   /**
-   * Sends emails for Company Registration (PDF Template 2 for Client, Admin Alert for Admin)
+   * Company registration: confirmation to the client, alert to the desk.
+   * The client mail follows
+   * 'GCC Mail Template Company Registration — Confirmation Email.pdf'.
    */
   async sendCompanyEmails(data: EmailData): Promise<void> {
     const adminEmail = this.getAdminEmail();
     const senderEmail = this.getSenderEmail();
-    const calendlyLink = this.getCalendlyLink(data);
+    const meetingLink = this.getCalendlyLink(data);
 
     try {
-      console.log(`[MailService] Sending Company Registration emails for: ${data.email}...`);
+      console.log(`[MailService] Sending company registration emails for ${data.email}...`);
 
-      const userMailHtml = generateCompanyConfirmationEmail(data, calendlyLink);
-      const adminMailHtml = generateCompanyAdminEmail(data);
+      const [userRes, adminRes] = await Promise.all([
+        this.resend.emails.send({
+          from: `Gulf Connect Consultancy <${senderEmail}>`,
+          to: data.email,
+          subject: 'Thank You for Contacting Gulf Connect',
+          html: generateCompanyConfirmationEmail(data, meetingLink),
+          text: generateConfirmationText(data, meetingLink, false),
+        }),
+        this.resend.emails.send({
+          from: `Gulf Connect Alert <${senderEmail}>`,
+          to: adminEmail,
+          replyTo: data.email,
+          subject: `New Company Registration: ${data.name}${data.company ? ` (${data.company})` : ''}`,
+          html: generateCompanyAdminEmail(data),
+          text: generateAdminText('New Company Registration', this.companyRows(data)),
+        }),
+      ]);
 
-      const userMailPromise = this.resend.emails.send({
-        from: `Gulf Connect Consultancy <${senderEmail}>`,
-        to: data.email,
-        subject: 'Thank You for Contacting Gulf Connect',
-        html: userMailHtml,
-      });
-
-      const adminMailPromise = this.resend.emails.send({
-        from: `Gulf Connect Alert <${senderEmail}>`,
-        to: adminEmail,
-        subject: `🔔 New Company Registration: ${data.name} (${data.company})`,
-        html: adminMailHtml,
-      });
-
-      const [userRes, adminRes] = await Promise.all([userMailPromise, adminMailPromise]);
-
-      if (userRes.error) {
-        console.error('[MailService] Resend Company User Email Error:', userRes.error);
-      } else {
-        console.log('[MailService] Company User email sent via Resend:', userRes.data);
-      }
-
-      if (adminRes.error) {
-        console.error('[MailService] Resend Company Admin Email Error:', adminRes.error);
-      } else {
-        console.log('[MailService] Company Admin email sent via Resend:', adminRes.data);
-      }
+      this.log('Company confirmation', userRes as SendResult);
+      this.log('Company admin alert', adminRes as SendResult);
     } catch (error) {
-      console.error('[MailService] Failed to send Company emails:', error);
+      console.error('[MailService] Failed to send company emails:', error);
     }
   }
 
   /**
-   * Backwards-compatible meeting email sender
+   * Backwards-compatible meeting email sender.
    */
   async sendMeetingEmails(data: {
     name: string;
@@ -130,24 +160,7 @@ export class MailService {
     area: string;
     message: string;
   }): Promise<void> {
-    const isInvestor = data.area.toLowerCase().includes('investor');
-
-    if (isInvestor) {
-      return this.sendInvestorEmails({
-        name: data.name,
-        email: data.email,
-        company: data.company,
-        phone: data.phone,
-        market: data.market,
-        area: data.area,
-        message: data.message,
-        preferredDate: data.preferredDate,
-        preferredTime: data.preferredTime,
-        enquiryId: data.enquiryId,
-      });
-    }
-
-    return this.sendCompanyEmails({
+    const payload: EmailData = {
       name: data.name,
       email: data.email,
       company: data.company,
@@ -158,9 +171,12 @@ export class MailService {
       preferredDate: data.preferredDate,
       preferredTime: data.preferredTime,
       enquiryId: data.enquiryId,
-    });
+    };
+
+    return data.area.toLowerCase().includes('investor')
+      ? this.sendInvestorEmails(payload)
+      : this.sendCompanyEmails(payload);
   }
 }
 
 export const mailService = new MailService();
-
